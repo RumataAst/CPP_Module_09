@@ -1,4 +1,4 @@
-NAME	=  Bitcoin_Exchange
+NAME	=  btc
 NAME_Debug = Debug
 SRCS    := main.cpp
 BIN		:= bin
