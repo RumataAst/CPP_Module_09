@@ -1,7 +1,0 @@
-1) I need to figure out how to get .csv file in stream      ---------------- Done
-2) Which container to use to get the data                   ---------------- Done (map to have a date as key and value)
-3) Do i need to check the data from initial dataset ????
-4) When everything is stored do the same for input file
-    a)  get to stream
-    b)  check the data
-    c)  perfrom calculation

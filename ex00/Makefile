@@ -1,12 +1,12 @@
 NAME	=  btc
-SRCS    := main.cpp
+SRCS    := main.cpp BitcoinExchange.cpp
 BIN		:= bin
 OBJS    := $(addprefix $(BIN)/, $(SRCS:.cpp=.o))
 INC		:= include
 
 # Compiler and flags
 CXX			= c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -I${INC}
+CXXFLAGS	= -g -Wall -Wextra -Werror -std=c++98 -I${INC}
 
 # Rules
 all: $(NAME)
