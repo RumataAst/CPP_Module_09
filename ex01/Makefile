@@ -1,5 +1,5 @@
 NAME	=  RPN
-SRCS    := main.cpp
+SRCS    := main.cpp RPN.cpp
 BIN		:= bin
 OBJS    := $(addprefix $(BIN)/, $(SRCS:.cpp=.o))
 INC		:= include

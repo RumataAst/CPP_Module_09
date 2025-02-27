@@ -91,6 +91,9 @@ void BitcoinExchange::fromCsvToMap(data_csv &data) const {
 }
 
 void BitcoinExchange::showMerge(std::ifstream &iFile) {
+    if (this->_dataExch.empty())
+        return ;
+
     std::string line, dateStr, valueStr;
 
     while (getline(iFile, line)) {
@@ -101,7 +104,6 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
         std::stringstream ss(line);
         
         if (std::getline(ss, dateStr, '|') && std::getline(ss, valueStr)) {
-            // Parse the date and value
             time_struct ts = parseDate(dateStr);
             finance_struct fs = parseNumber(valueStr);
             if (line == "date | value")
@@ -116,7 +118,7 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
             std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
         } else {
             --it;
-            double result = fs.number * it->second.number;  // Multiply values
+            double result = fs.number * it->second.number;
             if (result > DBL_MAX) {
                 std::cerr << "Error: multiplication result exceeds maximum double limit." << std::endl;
             } else {
@@ -126,8 +128,6 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
         }
     }
 }
-
-
 
 std::ostream &operator<<(std::ostream &os, const BitcoinExchange &be) {
     if (!be.getDataExch().empty()) {
