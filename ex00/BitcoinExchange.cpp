@@ -77,43 +77,6 @@ void BitcoinExchange::fromCsvToMap(data_csv &data) const {
     }
 }
 
-// void        BitcoinExchange::showMerge(std::ifstream iFile) const {
-//     std::string                         line = "";
-//     double                              value = 0;
-//     std::string                         date, valueStr, format;
-    
-//     while (getline(iFile, line)) {
-//         if (line.empty()) {
-//             continue;
-//         }
-//         std::stringstream ss(line);
-//         if (std::getline(ss, date, '|') && std::getline(ss, valueStr)) {
-//             std::stringstream valueStream(valueStr);
-
-//             format = BitcoinExchange::checkFormat(date, 0);
-//             if (format != "correct") {
-//                 std::cerr << "Error: bad input => " << date << std::endl;
-//             }
-//             format = BitcoinExchange::checkFormat(valueStr, 1);
-//             if (format != "correct") {
-//                 std::cerr << "Error: " << date << std::endl;
-//             }
-//         }
-//     }
-// }
-
-
-std::ostream &operator<<(std::ostream &os, const time_struct &ts) {
-    if (!ts.isValid()) {
-        os << "Bad format";
-    } else {
-        os << ts.year << "-" 
-            << (ts.month < 10 ? "0" : "") << ts.month << "-" 
-            << (ts.days < 10 ? "0" : "") << ts.days;
-    }
-    return os;
-}
-
 std::ostream &operator<<(std::ostream &os, const BitcoinExchange &be) {
     if (!be.getDataExch().empty()) {
         data_csv::const_iterator it;

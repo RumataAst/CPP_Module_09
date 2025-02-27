@@ -9,37 +9,27 @@
 #include <stdexcept>    // exception
 
 
+// it's overcomplicated for the current exercise but i just want to have more practise
+struct finance_stuct {
+    std::string     valueStr;
+    double          number;
+
+    bool    isNumberValid() const;
+    bool    operator<(const finance_stuct& fs) const;
+};
+
 struct time_struct {
     int days;
     int month;
     int year;
     int time_to_days;
 
-    bool isLeapYear() const {
-        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-    }
-
-    bool isValid() const {
-        if (month < 1 || month > 12) return false;
-
-        int max_days = 31;
-
-        if (month == 4 || month == 6 || month == 9 || month == 11) {
-            max_days = 30;
-        } else if (month == 2) {
-            max_days = isLeapYear() ? 29 : 28;
-        }
-
-        return (days >= 1 && days <= max_days);
-    }
-
-    // Custom comparison for time_struct to use in std::map
-    bool operator<(const time_struct& ts) const {
-        return time_to_days < ts.time_to_days;
-    }
+    bool isLeapYear() const;
+    bool isValid() const;
+    bool operator<(const time_struct& ts) const;
 };
 
-#define data_csv std::map<time_struct, double>
+#define data_csv std::map<time_struct, finance_stuct>
 
 class BitcoinExchange {
 private:
@@ -54,9 +44,8 @@ public:
 
     const data_csv    &getDataExch() const;
     
-    //helper function
-    time_struct parseDate(const std::string &date) const;
-    void        showData() const;
+    finance_stuct   parseNumber(const std::string &number) const;
+    time_struct     parseDate(const std::string &date) const;
 
     // void        showMerge(std::ifstream iFile) const;
 
@@ -67,5 +56,8 @@ std::ostream &operator<<(std::ostream &os, const time_struct &ts);
 
 //operator << for class BitcoinExchange
 std::ostream &operator<<(std::ostream &os, const BitcoinExchange &be);
+
+//opeator << for finance_struct
+std::ostream &operator<<(std::ostream &os, const finance_stuct &fs);
 
 #endif
