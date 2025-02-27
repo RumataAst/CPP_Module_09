@@ -9,6 +9,13 @@ bool    time_struct::operator<(const time_struct& ts) const {
 }
 
 bool    time_struct::isValid() const {
+    if (!isdigit(dateStr[0]) || !isdigit(dateStr[1]) || !isdigit(dateStr[2]) || !isdigit(dateStr[3]) ||
+        dateStr[4] != '-' || !isdigit(dateStr[5]) || !isdigit(dateStr[6]) ||
+        dateStr[7] != '-' || !isdigit(dateStr[8]) || !isdigit(dateStr[9])) {
+        std::cerr << "Error: Invalid date format for date: " << dateStr << std::endl;
+        return false;
+    }
+
     if (month < 1 || month > 12) 
         return false;
 
@@ -24,9 +31,7 @@ bool    time_struct::isValid() const {
 }
 
 std::ostream &operator<<(std::ostream &os, const time_struct &ts) {
-    if (!ts.isValid()) {
-        os << "Bad format";
-    } else {
+    if (ts.isValid()) {
         os << ts.year << "-" 
             << (ts.month < 10 ? "0" : "") << ts.month << "-" 
             << (ts.days < 10 ? "0" : "") << ts.days;

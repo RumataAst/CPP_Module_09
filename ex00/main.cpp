@@ -6,9 +6,17 @@ int main(int argc, char *argv[]) {
         std::cerr << "Please add file as argument: ./btc example.txt\n";
         return -1;
     }
-    
+    std::string     iFileStr = argv[1];
+    std::ifstream   iFile(iFileStr.c_str());
     BitcoinExchange initial_data;
-    (void)argv;
-    std::cout << initial_data;
+
+    if (!iFile.is_open()) {
+        std::cerr << "File " << iFileStr << " coulnd't be open\n";
+        return -1;
+    }
+    initial_data.showMerge(iFile);
+    iFile.close();
+
+    // std::cout << initial_data;
     return 0;
 }

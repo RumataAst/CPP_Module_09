@@ -1,5 +1,5 @@
 NAME	=  btc
-SRCS    := main.cpp BitcoinExchange.cpp
+SRCS    := main.cpp BitcoinExchange.cpp struct_finance.cpp struct_time.cpp
 BIN		:= bin
 OBJS    := $(addprefix $(BIN)/, $(SRCS:.cpp=.o))
 INC		:= include
