@@ -7,7 +7,7 @@
 
 class RPN {
 private:
-    std::stack<std::string> _dataRPN;
+    std::stack<int> _dataRPN;
 
 public:
     RPN();

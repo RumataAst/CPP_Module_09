@@ -14,12 +14,12 @@ bool finance_struct::isNumberValid() const {
         return false;
     }
 
-    if (value > INT_MAX) {
+    if (value > std::numeric_limits<double>::max()) {
         std::cerr << "Error: number exceeds maximum double limit." << std::endl;
         return false;
     }
 
-    if (*pEnd != '\0') {
+    if (*pEnd != '\0' && *pEnd != 'f') {
         std::cerr << "Error: bad format." << std::endl;
         return false;
     }

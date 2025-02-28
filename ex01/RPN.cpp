@@ -1,4 +1,5 @@
 #include "RPN.hpp"
+#include <cctype>
 
 RPN::RPN() : _dataRPN() {}
 
@@ -17,17 +18,13 @@ RPN::~RPN() {}
 
 void    RPN::calculate_RPN(std::string &data) {
     std::stringstream   ss(data);
-    std::string         operatorVal, operandVal;
+    std::string         value;
 
     for (int i = 0; data[i]; ++i) {
 
-        if (i % 2 != 0) {
-            std::getline(ss, operatorVal, ' ');
-            std::cout << operatorVal << std::endl;
-        }
-        else {
-            std::getline(ss, operandVal, ' ');
-            std::cout << operandVal << std::endl;
+        std::getline(ss, value, ' ');
+        if (isdigit(value)()) {
+
         }
     }
 }

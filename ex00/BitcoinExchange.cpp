@@ -119,7 +119,7 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
         } else {
             --it;
             double result = fs.number * it->second.number;
-            if (result > DBL_MAX) {
+            if (fs.number * it->second.number < fs.number) {
                 std::cerr << "Error: multiplication result exceeds maximum double limit." << std::endl;
             } else {
                 std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
