@@ -81,7 +81,6 @@ void BitcoinExchange::fromCsvToMap(data_csv &data) const {
             if (!(valueStream >> value)) {
                 continue;
             }
-
             time_struct ts = parseDate(dateStr);
             finance_struct fs = parseNumber(valueStr);
             data[ts] = fs;
@@ -95,19 +94,23 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
         return ;
 
     std::string line, dateStr, valueStr;
-
+    std::string::iterator it;
     while (getline(iFile, line)) {
         if (line.empty()) {
             continue;
         }
 
         std::stringstream ss(line);
-        
+        if (line == "date | value")
+            continue;
         if (std::getline(ss, dateStr, '|') && std::getline(ss, valueStr)) {
+            it = std::remove_if(dateStr.begin(), dateStr.end(), std::ptr_fun<int, int>(std::isspace));
+            dateStr.erase (it, dateStr.end());
+            it = std::remove_if(valueStr.begin(), valueStr.end(), std::ptr_fun<int, int>(std::isspace));
+            valueStr.erase (it, valueStr.end());
+
             time_struct ts = parseDate(dateStr);
             finance_struct fs = parseNumber(valueStr);
-            if (line == "date | value")
-                continue;
             if (!ts.isValid() ||!fs.isNumberValid()) {
                 continue;
             }

@@ -10,6 +10,8 @@
 #include <stdlib.h>     // strtod
 #include <limits>       // limits
 #include <cfloat>       // dbl_max
+#include <algorithm>    // remove spaces
+#include <cctype>       // isSpace
 
 // it's overcomplicated for the current exercise but i just want to have more practise
 struct finance_struct {
