@@ -6,7 +6,7 @@ INC		:= include
 
 # Compiler and flags
 CXX			= c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -I${INC}
+CXXFLAGS	= -g -Wall -Wextra -Werror -std=c++98 -I${INC}
 
 # Rules
 all: $(NAME)
@@ -15,13 +15,13 @@ $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
 $(BIN)/%.o: %.cpp | $(BIN)
-	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN):
-	+@mkdir $(BIN)
+	+mkdir $(BIN)
 
 clean:
-	@rm -rf $(BIN)
+	rm -rf $(BIN)
 
 fclean: clean
 	@rm -f $(NAME)

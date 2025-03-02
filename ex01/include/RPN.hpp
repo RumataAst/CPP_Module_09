@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stack>
 #include <sstream>
+#include <algorithm>
 
 class RPN {
 private:
@@ -15,6 +16,7 @@ public:
     RPN &operator=(const RPN &source);
     ~RPN();
 
+    int     perform_operation(char c, int value_1, int value_2);
     void    calculate_RPN(std::string &data);
 };
 
