@@ -114,20 +114,26 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
             if (!ts.isValid() ||!fs.isNumberValid()) {
                 continue;
             }
-        data_csv::iterator it = _dataExch.lower_bound(ts);
+        
+            data_csv::iterator it = _dataExch.lower_bound(ts);
 
-        if (it != _dataExch.end()) {
-            double result = fs.number * it->second.number;
-            std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
-        } else {
-            --it;
-            double result = fs.number * it->second.number;
-            if (fs.number * it->second.number < fs.number) {
-                std::cerr << "Error: multiplication result exceeds maximum double limit." << std::endl;
-            } else {
-                std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
+            if (it == _dataExch.end()) {
+                if (_dataExch.empty()) {
+                    std::cerr << "Error: No exchange rate data available.\n";
+                    continue;
+                }
+                it = _dataExch.end();
+                --it; 
             }
-        }
+
+            double result = fs.number * it->second.number;
+
+            if (fs.number > 0 && it->second.number > 0 &&
+                result > std::numeric_limits<int>::max()) {
+                std::cerr << "Error: too large number." << std::endl;
+                continue;
+            }
+            std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
         }
     }
 }

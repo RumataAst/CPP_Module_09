@@ -6,9 +6,7 @@
 
 RPN::RPN() : _dataRPN() {}
 
-RPN::RPN(const RPN &copy) {
-    this->_dataRPN = copy._dataRPN;
-}
+RPN::RPN(const RPN &copy) : _dataRPN(copy._dataRPN) {}
 
 RPN &RPN::operator=(const RPN &source) {
     if (this != &source) {
@@ -19,57 +17,59 @@ RPN &RPN::operator=(const RPN &source) {
 
 RPN::~RPN() {}
 
-int     RPN::perform_operation(char c, int value_1, int value_2) {
-    if (c == '+')
-        return value_1 + value_2;
-    else if (c == '-')
-        return value_1 - value_2;
-    else if (c == '*')
-        return value_1 * value_2;
-    else if (c == '/' && value_2 != 0)
-        return value_1 / value_2;
-    return -1;
+int RPN::perform_operation(char c, int value_1, int value_2) {
+    switch (c) {
+        case '+': return value_1 + value_2;
+        case '-': return value_1 - value_2;
+        case '*': return value_1 * value_2;
+        case '/': 
+            if (value_2 != 0) 
+                return value_1 / value_2;
+            std::cerr << "Error: Division by zero\n";
+            exit(EXIT_FAILURE);
+        default:
+            std::cerr << "Error: Invalid operator '" << c << "'\n";
+            exit(EXIT_FAILURE);
+    }
 }
 
-void    RPN::calculate_RPN(std::string &data) {
-    std::string::iterator       it;
-    int                         value_1, value_2, result;
-    std::string                 operands = "+-*/";
-    const char *                array = operands.c_str();
-    const char *                initial_array = NULL;
+void RPN::calculate_RPN(std::string &data) {
+    std::string::iterator   it;
+    int                     value_1, value_2, result;
+    std::string             operands = "+-*/";
 
+    // Remove whitespace characters
     it = std::remove_if(data.begin(), data.end(), std::ptr_fun<int, int>(std::isspace));
-    data.erase (it, data.end());
-    initial_array = data.c_str();
+    data.erase(it, data.end());
 
-    for (size_t i = 0; initial_array[i]; ++i) {
-        if (strchr(array, initial_array[i]) == NULL){
-            _dataRPN.push(initial_array[i] - '0');
-        }
-        else if (strchr(array, initial_array[i]) != NULL && _dataRPN.size() >= 2) {
+    for (size_t i = 0; i < data.length(); ++i) {
+        char c = data[i];
+
+        if (std::isdigit(c)) {
+            _dataRPN.push(c - '0');
+        } 
+        else if (operands.find(c) != std::string::npos) {
+            if (_dataRPN.size() < 2) {
+                std::cerr << "Error: Not enough operands for operator '" << c << "'\n";
+                return;
+            }
             value_2 = _dataRPN.top();
             _dataRPN.pop();
             value_1 = _dataRPN.top();
             _dataRPN.pop();
 
-            result = perform_operation(initial_array[i], value_1, value_2);
-            if (result == -1) {
-                std::cerr << "ERROR\n" << std::endl;
-                return ;
-            }
+            result = perform_operation(c, value_1, value_2);
             _dataRPN.push(result);
-        }
+        } 
         else {
-            std::cout << "Error\n";
-            return ;
+            std::cerr << "Error: Invalid character '" << c << "'\n";
+            return;
         }
-    }
-    
-    if (_dataRPN.size() != 1) {
-        std::cout << "Error\n";
-    }
-    else {
-       std::cout << _dataRPN.top() << std::endl;
     }
 
+    if (_dataRPN.size() != 1) {
+        std::cerr << "Error: Invalid RPN expression\n";
+    } else {
+        std::cout << _dataRPN.top() << std::endl;
+    }
 }
