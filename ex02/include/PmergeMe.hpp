@@ -4,17 +4,37 @@
 #include <iostream>
 #include <deque>
 #include <vector>
+#include <sstream>
+#include <algorithm>
 
 class Alg {
 private:
-    std::vector<int>    ;
-    std::deque
+    std::vector<int>    vector_seq;
+    std::deque<int>     deque_seq;
+
+    int                 vector_time;
+    int                 deque_time;
+
+    std::string         user_input;
 public:
-    Alg();
+    Alg(std::string &number_seq);
     Alg(const Alg &copy);
     Alg &operator=(const Alg &source);
     ~Alg();
 
-}
+    void    pass_to_containers(std::string &number_seq);
+    void    print_result() const;
+
+    void    sort_vector_seq();
+    void    sort_deque_time();
+
+};
+
+class NegativeNumber : public std::exception{
+public:
+    virtual const char *what() const throw() {
+        return "Negative number in the string";
+    }   
+};
 
 #endif
