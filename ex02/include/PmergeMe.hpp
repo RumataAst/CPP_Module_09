@@ -28,6 +28,14 @@ public:
     void    sort_vector_seq();
     void    sort_deque_time();
 
+//debugging
+    void    print_vector(std::vector<int> vector) {
+        std::cout << "DEBUGGING\n";
+    for (std::vector<int>::iterator it = vector.begin(); it != vector.end(); it++) {
+        std::cout << *it << " ";
+    }
+    std::cout << std::endl;
+}
 };
 
 class NegativeNumber : public std::exception{
@@ -36,5 +44,7 @@ public:
         return "Negative number in the string";
     }   
 };
+
+
 
 #endif

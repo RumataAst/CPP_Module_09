@@ -56,6 +56,10 @@ void    Alg::print_result() const {
 
 void   Alg::sort_vector_seq() {
     int     number_swaps = 0;
+
+    std::cout << "Fist step\n";
+    print_vector(vector_seq);
+
     std::vector<int>::iterator end_it;
     if (vector_seq.size() % 2 == 0) {
         end_it = vector_seq.end();
@@ -69,6 +73,33 @@ void   Alg::sort_vector_seq() {
             number_swaps++;
         }
     }
+
+    std::cout << "Second step\n";
+    print_vector(vector_seq);
+
+    for (std::vector<int>::iterator start_it = vector_seq.begin(); start_it != end_it; start_it+=4) {
+        if (*(start_it+1) > *(start_it+2)) {
+            std::swap(*start_it, *(start_it+2));
+            std::swap(*(start_it+1), *(start_it+3));
+            number_swaps++;
+        }
+    }
+
+    std::cout << "Third step\n";
+    print_vector(vector_seq);
+
+    std::vector<int>::iterator start_it = vector_seq.begin();
+    if (*(start_it+3) > *(start_it+7)) {
+        std::swap(*start_it, *(start_it+4));
+        std::swap(*(start_it+1), *(start_it+5));
+        std::swap(*(start_it+2), *(start_it+6));
+        std::swap(*(start_it+3), *(start_it+7));
+        number_swaps++;
+    }
+
+    std::cout << "4th step\n";
+    print_vector(vector_seq);
+
 
     std::cout << " Number of swaps is " << number_swaps << std::endl;
 }
