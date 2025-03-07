@@ -32,6 +32,8 @@ void    Alg::pass_to_containers(std::string &number_seq) {
     while (iss >> number) {
         if (number < 0)
             throw NegativeNumber();
+        if (std::find(vector_seq.begin(), vector_seq.end(), number) != vector_seq.end())
+            throw DuplicateNumber();
         vector_seq.push_back(number); 
         deque_seq.push_back(number);
     }
@@ -61,7 +63,14 @@ void     Alg::sort_vector_seq() {
     std::cout << "Initial Vector:\n";
     print_vector(vector_seq);
 
-    // First step: Swap adjacent elements
+    size_t last1 = 0;
+    size_t last2 = 0;
+
+    size_t max_power_of_2 = 1;
+    while (max_power_of_2 * 2 <= vector_size) {
+        max_power_of_2 *= 2;
+    }
+
     for (size_t i = 0; i + 1 < vector_size; i += 2) {
         if (vector_seq[i] > vector_seq[i + 1]) {
             std::swap(vector_seq[i], vector_seq[i + 1]);
@@ -72,13 +81,6 @@ void     Alg::sort_vector_seq() {
     std::cout << "After first step:\n";
     print_vector(vector_seq);
 
-    size_t max_power_of_2 = 1;
-    while (max_power_of_2 * 2 <= vector_size) {
-        max_power_of_2 *= 2;
-    }
-
-    size_t last1 = 0;
-    size_t last2 = 0;
     for (size_t group_size = max_power_of_2; group_size >= 2; group_size /= 2) {
         for (size_t i = 0; i + group_size * 2 - 1 < vector_size; i += group_size * 2) {
             last1 = i + group_size - 1;

@@ -45,6 +45,14 @@ public:
     }   
 };
 
+class DuplicateNumber : public std::exception{
+    public:
+        virtual const char *what() const throw() {
+            return "Duplicate number in the string";
+        }   
+    };
+    
+
 
 
 #endif
