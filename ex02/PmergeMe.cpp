@@ -56,10 +56,34 @@ void    Alg::print_result() const {
     std::cout << std::endl;
 }
 
+// Binary insertion: Insert a whole group based on the last element of the group
+void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group) {
+    size_t left = 0;
+    size_t right = main_seq.size() / group.size();  // Number of groups in main_seq
+    
+    int group_last = group[group.size() - 1];  // last element of the group
+    
+    // Perform binary search to find the correct position based on the last element of the group
+    while (left < right) {
+        size_t mid = left + (right - left) / 2;
+        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];  // last element of group in main_seq
+        
+        if (main_seq_last < group_last) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    // Insert the entire group at the found position
+    main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
+}
+
 void     Alg::sort_vector_seq() {
     int number_swaps = 0;
-    size_t vector_size = vector_seq.size();
+    int number_compare = 0;
 
+    size_t vector_size = vector_seq.size();
     std::cout << "Initial Vector:\n";
     print_vector(vector_seq);
 
@@ -76,27 +100,133 @@ void     Alg::sort_vector_seq() {
             std::swap(vector_seq[i], vector_seq[i + 1]);
             number_swaps++;
         }
+        number_compare++;
     }
 
-    std::cout << "After first step:\n";
-    print_vector(vector_seq);
+    // std::cout << "After first step:\n";
+    // print_vector(vector_seq);
 
-    for (size_t group_size = max_power_of_2; group_size >= 2; group_size /= 2) {
-        for (size_t i = 0; i + group_size * 2 - 1 < vector_size; i += group_size * 2) {
-            last1 = i + group_size - 1;
-            last2 = i + 2 * group_size - 1;
+    for (size_t number_of_groups = max_power_of_2; number_of_groups >= 2; number_of_groups /= 2) {
+        for (size_t i = 0; i + number_of_groups * 2 - 1 < vector_size; i += number_of_groups * 2) {
+            last1 = i + number_of_groups - 1;
+            last2 = i + 2 * number_of_groups - 1;
 
             if (vector_seq[last1] > vector_seq[last2]) {
-                for (size_t j = 0; j < group_size; ++j) {
-                    std::swap(vector_seq[i + j], vector_seq[i + j + group_size]);
+                for (size_t j = 0; j < number_of_groups; ++j) {
+                    std::swap(vector_seq[i + j], vector_seq[i + j + number_of_groups]);
                     number_swaps++;
                 }
             }
+            number_compare++;
         }
+        std::cout << "After initial phase\n";
         print_vector(vector_seq);
     }
-    std::cout << "end of last element of first is " << max_power_of_2 / 2 - 1 
-                << " and the last element of secodn is "<< max_power_of_2 - 1 << std::endl;
-    std::cout << "After last step: last1 is " << last1 << " last2 is " << last2 << std::endl;
-    std::cout << "Total swaps: " << number_swaps << std::endl;
+
+
+
+
+    std::cout << "After initial comp\n";
+    print_vector(vector_seq);
+
+
+    std::vector<int>    main_seq;
+    std::vector<int>    pend;
+    std::vector<int>    odd;
+
+    size_t group_size = max_power_of_2 / 4;  // Start from the largest group size
+    int Number_of_steps = 0;
+    while (group_size >= 1) {
+        Number_of_steps++;
+        std::cout << "Number of steps : " << Number_of_steps << std::endl;
+        std::cout << "Group_size : " << group_size << std::endl;
+
+        size_t num_groups = vector_size / group_size;
+    
+        // The first group always goes to main_seq
+        for (size_t j = 0; j < group_size; j++) {
+            main_seq.push_back(vector_seq[j]);
+        }
+    
+        // Start alternating from the second group
+        for (size_t i = 1; i < num_groups; i++) {
+            size_t group_start = i * group_size;
+            size_t group_end = group_start + group_size - 1;
+        
+            // Check if it's the last group
+            if (i == num_groups - 1) {
+                // Last group goes to odd
+                for (size_t j = group_start; j <= group_end; j++) {
+                    odd.push_back(vector_seq[j]);
+                }
+                
+                // If there are any remaining elements after the last group
+                size_t remaining_start = group_end + 1;
+                if (remaining_start < vector_seq.size()) {
+                    for (size_t j = remaining_start; j < vector_seq.size(); j++) {
+                        main_seq.push_back(vector_seq[j]);
+                    }
+                }
+            } else if (i % 2 == 1) {
+                // Odd-indexed groups go to main_seq
+                for (size_t j = group_start; j <= group_end; j++) {
+                    main_seq.push_back(vector_seq[j]);
+                }
+            } else if (i % 2 == 0) {
+                // Even-indexed groups go to pend
+                for (size_t j = group_start; j <= group_end; j++) {
+                    pend.push_back(vector_seq[j]);
+                }
+            }
+        }
+        std::cout << "Initial vector_seq\n";
+        print_vector(vector_seq);
+        std::cout << "Main_seq before binary\n";
+        print_vector(main_seq);
+
+        for (size_t p = 0; p < pend.size() / group_size; ++p) {
+            std::vector<int> group(pend.begin() + p * group_size, pend.begin() + (p + 1) * group_size);
+            binary_insert(main_seq, group);
+        }
+    
+        // Perform binary insertion for all groups in `odd` based on the comparison with the last element of `main_seq`
+        for (size_t p = 0; p < odd.size() / group_size; ++p) {
+            std::vector<int> group(odd.begin() + p * group_size, odd.begin() + (p + 1) * group_size);
+            binary_insert(main_seq, group);
+        }
+        // Update vector_seq to be the updated main_seq
+        vector_seq = main_seq;
+
+
+        std::cout << "Pend\n";
+        print_vector(pend);
+        std::cout << "Odd\n";
+        print_vector(odd);
+        std::cout << "Main_seq after binary\n";
+        print_vector(main_seq);
+                
+
+        // After binary insertion, clear pend
+        odd.clear();
+        pend.clear();
+        main_seq.clear();
+        
+        // vector_size -= num_groups * group_size;  // Reduce vector_size accordingly
+        group_size /= 2;  // Move to the next smaller group size
+
+        // std::cout << "Vector_seq after main\n";
+        // print_vector(vector_seq);
+    }
+
+
+
+    std::cout << "Vector_seq\n";
+    print_vector(vector_seq);
+
+
+    // std::cout << "end of last element of first is " << max_power_of_2 / 2 - 1 
+    //             << " and the last element of secodn is "<< max_power_of_2 - 1 << std::endl;
+    // std::cout << "After last step: last1 is " << last1 << " last2 is " << last2 << std::endl;
+    // std::cout << "Total swaps: " << number_swaps << std::endl;
+    // std::cout << "Total comp: " << number_compare << std::endl;
 }
