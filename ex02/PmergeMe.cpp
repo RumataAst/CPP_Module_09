@@ -56,6 +56,34 @@ void    Alg::print_result() const {
     std::cout << std::endl;
 }
 
+std::vector<int> generate_jacobsthal_sequence(int n) {
+    std::vector<int> jacobsthal_seq;
+    jacobsthal_seq.push_back(0);  // Jacobsthal[0] = 0
+    jacobsthal_seq.push_back(1);  // Jacobsthal[1] = 1
+    for (int i = 2; i < n; ++i) {
+        jacobsthal_seq.push_back(jacobsthal_seq[i - 1] + 2 * jacobsthal_seq[i - 2]);
+    }
+    return jacobsthal_seq;
+}
+
+void reorder_group_with_jacobsthal(std::vector<int>& group, const std::vector<int>& jacobsthal_seq) {
+    size_t group_size = group.size();
+    std::vector<int> reordered_group(group_size);
+
+    // Reorder the group based on the Jacobsthal sequence
+    for (size_t i = 0; i < group_size; ++i) {
+        if (i < jacobsthal_seq.size()) {
+            int index = jacobsthal_seq[i] % group_size;
+            reordered_group[i] = group[index];
+        } else {
+            reordered_group[i] = group[i];  // If Jacobsthal index is out of range, keep original order
+        }
+    }
+
+    // Update the original group with the reordered group
+    group = reordered_group;
+}
+
 // Binary insertion: Insert a whole group based on the last element of the group
 void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group) {
     size_t left = 0;
@@ -184,9 +212,13 @@ void     Alg::sort_vector_seq() {
         std::cout << "Main_seq before binary\n";
         print_vector(main_seq);
 
+        std::vector<int> jacobsthal_seq = generate_jacobsthal_sequence(pend.size() / group_size);
+
+        // Reorder groups based on Jacobsthal sequence and perform binary insertion
         for (size_t p = 0; p < pend.size() / group_size; ++p) {
             std::vector<int> group(pend.begin() + p * group_size, pend.begin() + (p + 1) * group_size);
-            binary_insert(main_seq, group);
+            reorder_group_with_jacobsthal(group, jacobsthal_seq);  // Reorder the group
+            binary_insert(main_seq, group);  // Binary insertion
         }
     
         // Perform binary insertion for all groups in `odd` based on the comparison with the last element of `main_seq`
