@@ -56,33 +56,69 @@ void    Alg::print_result() const {
     std::cout << std::endl;
 }
 
-std::vector<int> generate_jacobsthal_sequence(int n) {
+std::vector<int> generate_jacobsthal_indices(int n_groups) {
     std::vector<int> jacobsthal_seq;
-    jacobsthal_seq.push_back(0);  // Jacobsthal[0] = 0
-    jacobsthal_seq.push_back(1);  // Jacobsthal[1] = 1
-    for (int i = 2; i < n; ++i) {
-        jacobsthal_seq.push_back(jacobsthal_seq[i - 1] + 2 * jacobsthal_seq[i - 2]);
-    }
-    return jacobsthal_seq;
-}
 
-void reorder_group_with_jacobsthal(std::vector<int>& group, const std::vector<int>& jacobsthal_seq) {
-    size_t group_size = group.size();
-    std::vector<int> reordered_group(group_size);
+    jacobsthal_seq.push_back(0);
+    jacobsthal_seq.push_back(1);
 
-    // Reorder the group based on the Jacobsthal sequence
-    for (size_t i = 0; i < group_size; ++i) {
-        if (i < jacobsthal_seq.size()) {
-            int index = jacobsthal_seq[i] % group_size;
-            reordered_group[i] = group[index];
-        } else {
-            reordered_group[i] = group[i];  // If Jacobsthal index is out of range, keep original order
-        }
+    // Generate enough terms
+    while (jacobsthal_seq.back() < n_groups) {
+        int next = jacobsthal_seq[jacobsthal_seq.size() - 1] +
+                   2 * jacobsthal_seq[jacobsthal_seq.size() - 2];
+        jacobsthal_seq.push_back(next);
     }
 
-    // Update the original group with the reordered group
-    group = reordered_group;
+    // Skip the first 3, subtract 1 from each to get zero-based group indices
+    std::vector<int> adjusted_indices;
+    for (size_t i = 3; i < jacobsthal_seq.size(); ++i) {
+        adjusted_indices.push_back(jacobsthal_seq[i] - 1);
+    }
+
+    // Add the total number of groups to handle the last interval
+    adjusted_indices.push_back(n_groups);
+
+    return adjusted_indices;
 }
+
+
+std::vector<int> reorder_groups_by_jacobsthal(const std::vector<int>& pend,
+                                    int group_size) {
+    int n_groups = pend.size() / group_size;
+    std::vector<int> jacob_indices = generate_jacobsthal_indices(n_groups);
+
+    std::vector<int> reordered;
+
+    // Start from first interval
+    int prev_index = 0;
+
+    for (size_t idx = 0; idx < jacob_indices.size(); ++idx) {
+    int curr_index = jacob_indices[idx];
+
+    // Clamp to the number of groups
+    if (curr_index > n_groups)
+    curr_index = n_groups;
+
+    // Reverse from curr_index - 1 to prev_index
+    for (int g = curr_index - 1; g >= prev_index; --g) {
+    int start = g * group_size;
+    int end = start + group_size;
+
+    reordered.insert(reordered.end(),
+    pend.begin() + start,
+    pend.begin() + end);
+    }
+
+    prev_index = curr_index;
+
+    if (prev_index >= n_groups)
+    break;
+    }
+
+    return reordered;
+}
+
+
 
 // Binary insertion: Insert a whole group based on the last element of the group
 void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group) {
@@ -107,13 +143,37 @@ void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group) {
     main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
 }
 
+int binary_search_insert_index(const std::vector<int>& main_seq,
+                            const std::vector<int>& group,
+                            int right_bound,
+                            int group_size) {
+
+    int left = 0;
+    int right = right_bound;
+
+    int group_last = group[group_size - 1];  // last element of the group to be inserted
+
+    // Binary search to find the correct insertion point
+    while (left < right) {
+    int mid = left + (right - left) / 2;
+    int main_seq_last = main_seq[mid * group_size + group_size - 1];  // last element of the group at mid
+
+    if (main_seq_last < group_last) {
+    left = mid + 1;  // b is bigger, move to the right half
+    } else {
+    right = mid;  // a is bigger or equal, move to the left half
+    }
+    }
+    return left;
+}
+
 void     Alg::sort_vector_seq() {
     int number_swaps = 0;
     int number_compare = 0;
 
     size_t vector_size = vector_seq.size();
-    std::cout << "Initial Vector:\n";
-    print_vector(vector_seq);
+    // std::cout << "Initial Vector:\n";
+    // print_vector(vector_seq);
 
     size_t last1 = 0;
     size_t last2 = 0;
@@ -147,15 +207,14 @@ void     Alg::sort_vector_seq() {
             }
             number_compare++;
         }
-        std::cout << "After initial phase\n";
-        print_vector(vector_seq);
+        // std::cout << "After initial phase\n";
+        // print_vector(vector_seq);
     }
 
 
 
-
-    std::cout << "After initial comp\n";
-    print_vector(vector_seq);
+    // std::cout << "After initial comp\n";
+    // print_vector(vector_seq);
 
 
     std::vector<int>    main_seq;
@@ -166,8 +225,8 @@ void     Alg::sort_vector_seq() {
     int Number_of_steps = 0;
     while (group_size >= 1) {
         Number_of_steps++;
-        std::cout << "Number of steps : " << Number_of_steps << std::endl;
-        std::cout << "Group_size : " << group_size << std::endl;
+        // std::cout << "Number of steps : " << Number_of_steps << std::endl;
+        std::cout << "\nGroup_size : " << group_size << std::endl;
 
         size_t num_groups = vector_size / group_size;
     
@@ -211,31 +270,58 @@ void     Alg::sort_vector_seq() {
         print_vector(vector_seq);
         std::cout << "Main_seq before binary\n";
         print_vector(main_seq);
+        std::cout << "Pend before binary\n";
+        print_vector(pend);
+        std::cout << "Odd before binary\n";
+        print_vector(odd);
 
-        std::vector<int> jacobsthal_seq = generate_jacobsthal_sequence(pend.size() / group_size);
 
+        std::vector<int> reordered_groups = reorder_groups_by_jacobsthal(pend, group_size);
+
+        // std::cout << "\njacobsthal_seq\n";
+        // print_vector(jacobsthal_seq);
+
+        std::cout << "reordered_groups\n";
+        print_vector(reordered_groups);
         // Reorder groups based on Jacobsthal sequence and perform binary insertion
-        for (size_t p = 0; p < pend.size() / group_size; ++p) {
-            std::vector<int> group(pend.begin() + p * group_size, pend.begin() + (p + 1) * group_size);
-            reorder_group_with_jacobsthal(group, jacobsthal_seq);  // Reorder the group
-            binary_insert(main_seq, group);  // Binary insertion
+
+
+        std::vector<int>    main_seq_original = main_seq;
+        for (size_t p = 0; p < (reordered_groups.size()) / group_size; ++p) {
+            std::vector<int> group(reordered_groups.begin() + p * group_size, reordered_groups.begin() + (p + 1) * group_size);
+    
+            // Determine the original position of the first element in the group
+            int original_index = p;  // Assuming the group corresponds to the p-th element in pend
+            int right_bound = std::distance(main_seq_original.begin(),
+                                            std::find(main_seq_original.begin(), main_seq_original.end(), original_index));
+    
+            // Calculate the insertion index using the optimized right_bound
+            int insert_index = binary_search_insert_index(main_seq, group, right_bound, group_size);
+    
+            // Insert the group into main_seq
+            main_seq.insert(main_seq.begin() + insert_index * group_size, group.begin(), group.end());
         }
+
+        std::cout << "Main_seq after insert Pend\n";
+        print_vector(main_seq);
     
         // Perform binary insertion for all groups in `odd` based on the comparison with the last element of `main_seq`
         for (size_t p = 0; p < odd.size() / group_size; ++p) {
             std::vector<int> group(odd.begin() + p * group_size, odd.begin() + (p + 1) * group_size);
             binary_insert(main_seq, group);
         }
+        std::cout << "Main_seq after insert Odd\n";
+        print_vector(main_seq);
         // Update vector_seq to be the updated main_seq
         vector_seq = main_seq;
 
 
-        std::cout << "Pend\n";
-        print_vector(pend);
-        std::cout << "Odd\n";
-        print_vector(odd);
-        std::cout << "Main_seq after binary\n";
-        print_vector(main_seq);
+        // std::cout << "Pend\n";
+        // print_vector(pend);
+        // std::cout << "Odd\n";
+        // print_vector(odd);
+        // std::cout << "Main_seq after binary\n";
+        // print_vector(main_seq);
                 
 
         // After binary insertion, clear pend
