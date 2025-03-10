@@ -290,8 +290,8 @@ void     Alg::sort_vector_seq() {
         for (size_t p = 0; p < (reordered_groups.size()) / group_size; ++p) {
             std::vector<int> group(reordered_groups.begin() + p * group_size, reordered_groups.begin() + (p + 1) * group_size);
     
-            // Determine the original position of the first element in the group
-            int original_index = p;  // Assuming the group corresponds to the p-th element in pend
+
+            int original_index = p + 1;
             int right_bound = std::distance(main_seq_original.begin(),
                                             std::find(main_seq_original.begin(), main_seq_original.end(), original_index));
     
