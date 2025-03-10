@@ -189,6 +189,28 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
     }
 }
 
+void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare) {
+    size_t left = 0;
+    size_t right = main_seq.size() / group.size();  // Number of groups in main_seq
+    
+    int group_last = group[group.size() - 1];  // last element of the group
+    
+    // Perform binary search to find the correct position based on the last element of the group
+    while (left < right) {
+        size_t mid = left + (right - left) / 2;
+        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];  // last element of group in main_seq
+        
+        if (main_seq_last < group_last) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+        number_compare++;
+    }
+
+    // Insert the entire group at the found position
+    main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
+}
 
 void     Alg::sort_vector_seq() {
     int number_swaps = 0;
@@ -202,7 +224,7 @@ void     Alg::sort_vector_seq() {
         max_power_of_2 *= 2;
     }
 
-    // std::cout << "Before initial phase\n";
+    std::cout << "Before initial phase\n";
     print_vector(vector_seq);
 
     for (size_t number_of_elements = 1; number_of_elements <= max_power_of_2 / 2; number_of_elements *= 2) {
@@ -220,8 +242,8 @@ void     Alg::sort_vector_seq() {
                 }
             }
         }
-        std::cout << "After initial phase\n";
-        print_vector(vector_seq);
+        // std::cout << "After initial phase\n";
+        // print_vector(vector_seq);
     }
     
     //Second step of creating main_seq, ped, odd
@@ -231,33 +253,38 @@ void     Alg::sort_vector_seq() {
     std::vector<int>    odd;
 
     while (group_size >= 1) {
-        std::cout << "\nGroup_size : " << group_size << std::endl;
+        // std::cout << "\nGroup_size : " << group_size << std::endl;
         main_seq.clear();
         pend.clear();
         odd.clear();
     
         processGroups(vector_seq, main_seq, pend, odd, group_size);
-        
+
+        // std::cout << "Main_seq\n";
+        // print_vector(main_seq);
+        // std::cout << "Definitely Pend\n";
+        // print_vector(pend);
+        // std::cout << "Odd\n";
+        // print_vector(odd);
+
         // Recompute Jacobsthal sequence and reorderedPend after pend is updated.
         std::vector<int> jacobsthal = generateJacobsthalSequence(pend.size());
         std::vector<int> reorderedPend = reorderPend(pend, jacobsthal, group_size);
-    
-        // std::cout << "Main_seq\n";
-        // print_vector(main_seq);
-        // std::cout << "Pend\n";
-        // print_vector(pend);
-        std::cout << "Reordered Pend\n";
-        print_vector(reorderedPend);
-        // std::cout << "Odd\n";
-        // print_vector(odd);
-    
+
+
+        // std::cout << "Reordered Pend\n";
+        // print_vector(reorderedPend);
         // std::cout << "Jacobsthal\n";
         // print_vector(jacobsthal);
 
 
         std::vector<int> group;
+        
+        std::cout << "Main_seq before insert\n";
+        print_vector(main_seq);
+
         size_t start = 0;
-        while (start < reorderedPend.size()) {
+        while (start < reorderedPend.size() - 1) {
             // Clear the group vector to hold the new group of elements
             group.clear();
             // Push elements to the group (make sure not to exceed the group size or vector size)
@@ -267,14 +294,21 @@ void     Alg::sort_vector_seq() {
             }
             // print_vector(group);
             // Send the group to another function for processing
-            insertOddIntoMain(main_seq, group);
+            binary_insert(main_seq, group, number_compare);
         }
+        binary_insert(main_seq, odd, number_compare);
+        // std::cout << "Main_seq after insert pend\n";
+        // print_vector(main_seq);
         // insertPendIntoMain(main_seq, reorderedPend, jacobsthal);
-        insertOddIntoMain(main_seq, odd);
+
+        // std::cout << "Main_seq after insert odd\n";
+        // print_vector(main_seq);
         
         
         group_size /= 2;
+        vector_seq = main_seq;
     }
+    std::cout << "Number of comparision " << number_compare << std::endl;
 
     std::cout << "Main_vector\n";
     print_vector(vector_seq);
