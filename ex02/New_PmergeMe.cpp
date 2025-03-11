@@ -123,31 +123,6 @@ std::vector<int> reorderPend(const std::vector<int>& pend, const std::vector<int
     return reorderedPend;
 }
 
-size_t binarySearchInsertPosition(const std::vector<int>& vec, int value, size_t left, size_t right) {
-    while (left <= right) {
-        size_t mid = left + (right - left) / 2;
-        if (vec[mid] == value) {
-            return mid; // Insert at the position of the duplicate
-        } else if (vec[mid] < value) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
-    }
-    return left; // Insert at the correct position to maintain sorted order
-}
-
-// Insert odd numbers into `main_seq` in sorted order
-void insertOddIntoMain(std::vector<int>& main_seq, const std::vector<int>& odd) {
-    for (size_t i = 0; i < odd.size(); ++i) {
-        if (odd[i] % 2 != 0) { // Ensure the number is odd
-            size_t rightBound = main_seq.empty() ? 0 : main_seq.size() - 1;
-            size_t insertPos = binarySearchInsertPosition(main_seq, odd[i], 0, rightBound);
-            main_seq.insert(main_seq.begin() + insertPos, odd[i]);
-        }
-    }
-}
-
 void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_seq, std::vector<int>& pend, std::vector<int>& odd, size_t group_size) {
     size_t vector_size = vector_seq.size();
     size_t num_groups = vector_size / group_size;
@@ -187,6 +162,53 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
             main_seq.push_back(vector_seq[j]);
         }
     }
+}
+
+int get_index(std::vector<int>& group_pend, std::vector<int>& main_seq, size_t group_size, int first_group_element) {
+    // Find the index of first_group_element in group_pend
+    std::vector<int> original_main_seq = main_seq;
+    std::vector<int>::iterator it_pend = std::find(group_pend.begin(), group_pend.end(), first_group_element);
+    if (it_pend == group_pend.end()) {
+        return -1; // Element not found in group_pend
+    }
+    size_t index_in_pend = it_pend - group_pend.begin();
+    
+    // Check if the calculated index is within vector_seq bounds
+    size_t original_main_seq_index = index_in_pend + group_size;
+    if (original_main_seq_index >= original_main_seq.size()) {
+        return -1; // Index out of bounds in original_main_seq
+    }
+    int target_value = original_main_seq[original_main_seq_index];
+    
+    // Find the target_value in main_seq
+    std::vector<int>::iterator it_main = std::find(main_seq.begin(), main_seq.end(), target_value);
+    if (it_main == main_seq.end()) {
+        return -1; // Target value not found in main_seq
+    }
+    return static_cast<int>(it_main - main_seq.begin());
+}
+
+void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
+    size_t left = 0;
+    size_t right = right_index;  // Number of groups in main_seq
+    
+    int group_last = group[group.size() - 1];  // last element of the group
+    
+    // Perform binary search to find the correct position based on the last element of the group
+    while (left < right) {
+        size_t mid = left + (right - left) / 2;
+        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];  // last element of group in main_seq
+        
+        if (main_seq_last < group_last) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+        number_compare++;
+    }
+
+    // Insert the entire group at the found position
+    main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
 }
 
 void binary_insert(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare) {
@@ -262,7 +284,7 @@ void     Alg::sort_vector_seq() {
 
         // std::cout << "Main_seq\n";
         // print_vector(main_seq);
-        // std::cout << "Definitely Pend\n";
+        // std::cout << "Pend\n";
         // print_vector(pend);
         // std::cout << "Odd\n";
         // print_vector(odd);
@@ -280,11 +302,12 @@ void     Alg::sort_vector_seq() {
 
         std::vector<int> group;
         
-        std::cout << "Main_seq before insert\n";
-        print_vector(main_seq);
+        // std::cout << "Main_seq before insert\n";
+        // print_vector(main_seq);
 
         size_t start = 0;
-        while (start < reorderedPend.size() - 1) {
+        int right_index = 0;
+        while (start <= reorderedPend.size() - 1) {
             // Clear the group vector to hold the new group of elements
             group.clear();
             // Push elements to the group (make sure not to exceed the group size or vector size)
@@ -292,9 +315,22 @@ void     Alg::sort_vector_seq() {
                 group.push_back(reorderedPend[start]);
                 start++;
             }
-            // print_vector(group);
+            
+            std::cout << "current group ";
+            print_vector(group);
             // Send the group to another function for processing
-            binary_insert(main_seq, group, number_compare);
+            if (group[0] && vector_seq.size() > 5) {
+                right_index = get_index(pend, main_seq, group_size, group[0]);
+                std::cout << "Right index is " << right_index << std::endl;
+                if (right_index != -1)
+                    binary_insert_index(main_seq, group, number_compare, right_index + 1);
+                else                 
+                    binary_insert(main_seq, group, number_compare);
+                // std::cout << "Main_seq after insert pend\n";
+                // print_vector(main_seq);
+            }
+            else 
+                binary_insert(main_seq, group, number_compare);
         }
         binary_insert(main_seq, odd, number_compare);
         // std::cout << "Main_seq after insert pend\n";
@@ -308,9 +344,9 @@ void     Alg::sort_vector_seq() {
         group_size /= 2;
         vector_seq = main_seq;
     }
-    std::cout << "Number of comparision " << number_compare << std::endl;
-
+    
     std::cout << "Main_vector\n";
     print_vector(vector_seq);
+    std::cout << "Number of comparision " << number_compare << std::endl;
 
 }
