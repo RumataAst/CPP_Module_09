@@ -164,33 +164,21 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
     }
 }
 
-int get_index(std::vector<int>& group_pend, std::vector<int>& main_seq, size_t group_size, int first_group_element) {
-    // Find the index of first_group_element in group_pend
-    std::vector<int> original_main_seq = main_seq;
-    std::vector<int>::iterator it_pend = std::find(group_pend.begin(), group_pend.end(), first_group_element);
-    if (it_pend == group_pend.end()) {
-        return -1; // Element not found in group_pend
-    }
-    size_t index_in_pend = it_pend - group_pend.begin();
-    
-    // Check if the calculated index is within vector_seq bounds
-    size_t original_main_seq_index = index_in_pend + group_size;
-    if (original_main_seq_index >= original_main_seq.size()) {
-        return -1; // Index out of bounds in original_main_seq
-    }
-    int target_value = original_main_seq[original_main_seq_index];
-    
-    // Find the target_value in main_seq
-    std::vector<int>::iterator it_main = std::find(main_seq.begin(), main_seq.end(), target_value);
-    if (it_main == main_seq.end()) {
-        return -1; // Target value not found in main_seq
-    }
+int get_index(std::vector<int>& original_main_seq, std::vector<int>& main_seq, size_t group_size, int first_group_element) {
+
+    //get index of the element in the original original_main_seq. b1a1b2a2b3a3 -> b3.
+    std::vector<int>::iterator it_org_main_seq = std::find(original_main_seq.begin(), original_main_seq.end(), first_group_element);
+    for (size_t i = 0; i < group_size; ++i)
+        it_org_main_seq++;
+
+    std::vector<int>::iterator it_main = std::find(main_seq.begin(), main_seq.end(), *it_org_main_seq);
+
     return static_cast<int>(it_main - main_seq.begin());
 }
 
 void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
     size_t left = 0;
-    size_t right = right_index;  // Number of groups in main_seq
+    size_t right = right_index - 1;  // Number of groups in main_seq
     
     int group_last = group[group.size() - 1];  // last element of the group
     
@@ -307,6 +295,8 @@ void     Alg::sort_vector_seq() {
 
         size_t start = 0;
         int right_index = 0;
+        std::vector<int> original_main_seq = vector_seq;
+
         while (start <= reorderedPend.size() - 1) {
             // Clear the group vector to hold the new group of elements
             group.clear();
@@ -316,14 +306,14 @@ void     Alg::sort_vector_seq() {
                 start++;
             }
             
-            std::cout << "current group ";
-            print_vector(group);
+            // std::cout << "current group ";
+            // print_vector(group);
             // Send the group to another function for processing
-            if (group[0] && vector_seq.size() > 5) {
-                right_index = get_index(pend, main_seq, group_size, group[0]);
-                std::cout << "Right index is " << right_index << std::endl;
+            if (jacobsthal.size() > 0) {
+                right_index = get_index(original_main_seq, main_seq, group_size, group[0]);
+                // std::cout << "Right index is " << right_index << std::endl;
                 if (right_index != -1)
-                    binary_insert_index(main_seq, group, number_compare, right_index + 1);
+                    binary_insert_index(main_seq, group, number_compare, right_index + group_size);
                 else                 
                     binary_insert(main_seq, group, number_compare);
                 // std::cout << "Main_seq after insert pend\n";
