@@ -59,7 +59,7 @@ void    Alg::print_result() const {
 std::vector<int> generateJacobsthalSequence(int size) {
     std::vector<int> jacobsthal;
     
-    if (size <= 0)
+    if (size == 0)
         return jacobsthal;
 
     jacobsthal.push_back(2); // J(1) = 2
@@ -313,7 +313,7 @@ void     Alg::sort_vector_seq() {
                 right_index = get_index(original_main_seq, main_seq, group_size, group[0]);
                 // std::cout << "Right index is " << right_index << std::endl;
                 if (right_index != -1)
-                    binary_insert_index(main_seq, group, number_compare, right_index + group_size);
+                    binary_insert_index(main_seq, group, number_compare, right_index);
                 else                 
                     binary_insert(main_seq, group, number_compare);
                 // std::cout << "Main_seq after insert pend\n";
