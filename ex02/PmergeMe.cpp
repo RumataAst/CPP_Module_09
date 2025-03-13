@@ -201,6 +201,8 @@ void     Alg::sort_vector_seq() {
     std::cout << "Before initial phase\n";
     print_vector(vector_seq);
 
+
+    
     for (size_t number_of_elements = 1; number_of_elements <= max_power_of_2 / 2; number_of_elements *= 2) {
         for (size_t group = 0; group + number_of_elements * 2 - 1 < vector_size; group += number_of_elements * 2) {
             size_t last1 = group + number_of_elements - 1; // Last index of the first group
@@ -236,9 +238,6 @@ void     Alg::sort_vector_seq() {
         std::vector<int> reorderedPend = reorderPend(pend, jacobsthal, group_size);
         if (reorderedPend.empty())
             reorderedPend = pend;
-
-        // std::cout << "Main_vector\n";
-        // print_vector(pend);
 
         std::vector<int> group;
 
