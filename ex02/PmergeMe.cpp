@@ -135,17 +135,14 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
         size_t group_end = group_start + group_size;
 
         if (i == num_groups - 1) {
-            // Last group goes to odd
             for (size_t j = group_start; j < group_end; j++) {
                 odd.push_back(vector_seq[j]);
             }
         } else if (i % 2 == 1) {
-            // Odd iteration index (group 1, 3, ...) go to main_seq
             for (size_t j = group_start; j < group_end; j++) {
                 main_seq.push_back(vector_seq[j]);
             }
         } else {
-            // Even iteration index (group 2, 4, ...) go to pend
             for (size_t j = group_start; j < group_end; j++) {
                 pend.push_back(vector_seq[j]);
             }
@@ -176,12 +173,12 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
         size_t mid = left + (right - left) / 2;
         int main_seq_last = main_seq[mid * group.size() + group.size() - 1];  // last element of group in main_seq
         
+        number_compare++;
         if (main_seq_last < group_last) {
             left = mid + 1;
         } else {
             right = mid;
         }
-        number_compare++;
     }
 
     // Insert the entire group at the found position
@@ -211,9 +208,9 @@ void     Alg::sort_vector_seq() {
             size_t last2 = group + number_of_elements * 2 - 1; // Last index of the second group
     
             // Compare the last elements of the two groups
+            number_compare++;
             if (vector_seq[last1] > vector_seq[last2]) {
-                number_compare++;
-                // Swap the two groups
+
                 for (size_t i = 0; i < number_of_elements; ++i) {
                     std::swap(vector_seq[group + i], vector_seq[group + number_of_elements + i]);
                     number_swaps++;
@@ -248,25 +245,31 @@ void     Alg::sort_vector_seq() {
 
         size_t start = 0;
         std::vector<int> original_main_seq = vector_seq;
-        size_t group_count = 0;
+        int group_count = 0;
+        size_t index_jacob = 0;
         while (start <= reorderedPend.size() - 1) {
             group.clear();
             for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
                 group.push_back(reorderedPend[start]);
                 start++;
             }
-            group_count++;
 
+            if (!jacobsthal.empty()) {
+                if (group_count < jacobsthal.back()) {
+                    if (index_jacob < jacobsthal.size() - 1 && group_count >= jacobsthal[index_jacob]) {
+                        group_count = jacobsthal[++index_jacob];
+                    }
+                }
+            }
             binary_insert_index(main_seq, group, number_compare, group_count);
-
         }
         binary_insert_index(main_seq, odd, number_compare, 0);
-        
+
         group_size /= 2;
         vector_seq = main_seq;
     }
     
     std::cout << "Main_vector\n";
     print_vector(vector_seq);
-    std::cout << "Number of comparision " << number_compare << std::endl;
+    std::cout << "Final number of comparision " << number_compare << std::endl;
 }
