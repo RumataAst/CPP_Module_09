@@ -60,10 +60,10 @@ std::vector<int> generateJacobsthalSequence(int size) {
     std::vector<int> jacobsthal_normal;
     std::vector<int> jacobsthal;
 
-    if (size <= 0) return jacobsthal_normal;
+    if (size <= 1) 
+        return jacobsthal_normal;
 
     jacobsthal_normal.push_back(0);  // J(0) = 0
-    if (size == 1) return jacobsthal_normal;
 
     jacobsthal_normal.push_back(1);  // J(1) = 1
     for (int i = 2; i < size; ++i) {
@@ -243,26 +243,31 @@ void     Alg::sort_vector_seq() {
         std::vector<int> group;
 
         size_t start = 0;
-        int group_count = 0;
-        size_t index_jacob = 1;
+
+        int group_count = -1;
+        int number_group = 0;
+
+        if (!jacobsthal.empty()) {
+            group_count = jacobsthal[0];
+        }
+
+        size_t index_jacob = 0;
 
     
         while (start <= reorderedPend.size() - 1) {
             group.clear();
-            std::cout << "jacobsthal\n";
-            print_vector(jacobsthal);
             for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
                 group.push_back(reorderedPend[start]);
                 start++;
             }
             if (!jacobsthal.empty()) {
-                // std::cout << "Comparint group_count " << group_count << " and jacobsthal[++index_jacob]   " << jacobsthal[++index_jacob] << std::endl;
-                if (index_jacob < jacobsthal.size() - 1 && group_count >= jacobsthal[index_jacob]) {
+                if (index_jacob < jacobsthal.size() - 1 && number_group >= jacobsthal[index_jacob]) {
                     group_count = jacobsthal[++index_jacob];
-                    
+                }
+                else {
+                    number_group++;
                 }
             }
-            std::cout << group_count << std::endl;
             binary_insert_index(main_seq, group, number_compare, group_count);
         }
         binary_insert_index(main_seq, odd, number_compare, -1);
