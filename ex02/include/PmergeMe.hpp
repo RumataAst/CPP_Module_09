@@ -31,7 +31,6 @@ public:
 
 //debugging
     void    print_vector(std::vector<int> vector) {
-        // std::cout << "DEBUGGING\n";
     for (std::vector<int>::iterator it = vector.begin(); it != vector.end(); it++) {
         std::cout << *it << " ";
     }
