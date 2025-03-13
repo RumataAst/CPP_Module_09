@@ -1,5 +1,5 @@
 NAME	=  PmergeMe
-SRCS    := main.cpp New_PmergeMe.cpp
+SRCS    := main.cpp PmergeMe.cpp
 BIN		:= bin
 OBJS    := $(addprefix $(BIN)/, $(SRCS:.cpp=.o))
 INC		:= include
