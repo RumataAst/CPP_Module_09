@@ -57,25 +57,22 @@ void    Alg::print_result() const {
 }
 
 std::vector<int> generateJacobsthalSequence(int size) {
+    std::vector<int> jacobsthal_normal;
     std::vector<int> jacobsthal;
-    
-    if (size == 0 || size == 1)
-        return jacobsthal;
 
-    jacobsthal.push_back(2);
+    if (size <= 0 || size == 1) 
+        return jacobsthal_normal;
 
-    if (size == 2)
-        return jacobsthal;
+    jacobsthal_normal.push_back(0);  // J(0) = 0
 
-    jacobsthal.push_back(4);
-
-    int i = 2;
-    while (jacobsthal.back() < size) {
-        int next = jacobsthal[i - 1] + 2 * jacobsthal[i - 2];
-        jacobsthal.push_back(next);
-        ++i;
+    jacobsthal_normal.push_back(1);  // J(1) = 1
+    for (int i = 2; i < size; ++i) {
+        jacobsthal_normal.push_back(jacobsthal_normal[i - 1] + 2 * jacobsthal_normal[i - 2]);
     }
 
+    for (size_t i = 3; i < jacobsthal_normal.size(); ++i) {
+        jacobsthal.push_back(jacobsthal_normal[i] - 1);
+    }    
     return jacobsthal;
 }
 
@@ -206,6 +203,8 @@ void     Alg::sort_vector_seq() {
     std::cout << "Before initial phase\n";
     print_vector(vector_seq);
 
+
+    
     for (size_t number_of_elements = 1; number_of_elements <= max_power_of_2 / 2; number_of_elements *= 2) {
         for (size_t group = 0; group + number_of_elements * 2 - 1 < vector_size; group += number_of_elements * 2) {
             size_t last1 = group + number_of_elements - 1; // Last index of the first group
@@ -242,8 +241,8 @@ void     Alg::sort_vector_seq() {
         if (reorderedPend.empty())
             reorderedPend = pend;
 
-        // std::cout << "Main_vector\n";
-        // print_vector(pend);
+        std::cout << "jacobsthal\n";
+        print_vector(jacobsthal);
 
         std::vector<int> group;
 
