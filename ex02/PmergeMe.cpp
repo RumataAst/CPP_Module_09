@@ -60,7 +60,7 @@ std::vector<int> generateJacobsthalSequence(int size) {
     std::vector<int> jacobsthal_normal;
     std::vector<int> jacobsthal;
 
-    if (size <= 0 || size == 1) 
+    if (size <= 1) 
         return jacobsthal_normal;
 
     jacobsthal_normal.push_back(0);  // J(0) = 0
@@ -237,9 +237,6 @@ void     Alg::sort_vector_seq() {
         std::vector<int> reorderedPend = reorderPend(pend, jacobsthal, group_size);
         if (reorderedPend.empty())
             reorderedPend = pend;
-
-        std::cout << "jacobsthal\n";
-        print_vector(jacobsthal);
 
         std::vector<int> group;
 
