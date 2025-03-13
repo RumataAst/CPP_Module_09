@@ -70,6 +70,7 @@ std::vector<int> generateJacobsthalSequence(int size) {
         jacobsthal_normal.push_back(jacobsthal_normal[i - 1] + 2 * jacobsthal_normal[i - 2]);
     }
 
+
     for (size_t i = 3; i < jacobsthal_normal.size(); ++i) {
         jacobsthal.push_back(jacobsthal_normal[i] - 1);
     }    
@@ -161,9 +162,9 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
 void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int group_count) {
     size_t left = 0;
     size_t right = 0;
-    if (group_count != 0)
+    if (group_count != -1)
         right = pow(2, group_count + 1) - 1;
-    if (group_count == 0 || right >= main_seq.size() / group.size()) 
+    if (group_count == -1 || right >= main_seq.size() / group.size()) 
         right = main_seq.size() / group.size(); 
 
     int group_last = group[group.size() - 1];
@@ -241,26 +242,34 @@ void     Alg::sort_vector_seq() {
         std::vector<int> group;
 
         size_t start = 0;
-        std::vector<int> original_main_seq = vector_seq;
-        int group_count = 0;
+
+        int group_count = -1;
+        int number_group = 0;
+
+        if (!jacobsthal.empty()) {
+            group_count = jacobsthal[0];
+        }
+
         size_t index_jacob = 0;
+
+    
         while (start <= reorderedPend.size() - 1) {
             group.clear();
             for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
                 group.push_back(reorderedPend[start]);
                 start++;
             }
-
             if (!jacobsthal.empty()) {
-                if (group_count < jacobsthal.back()) {
-                    if (index_jacob < jacobsthal.size() - 1 && group_count >= jacobsthal[index_jacob]) {
-                        group_count = jacobsthal[++index_jacob];
-                    }
+                if (index_jacob < jacobsthal.size() - 1 && number_group >= jacobsthal[index_jacob]) {
+                    group_count = jacobsthal[++index_jacob];
+                }
+                else {
+                    number_group++;
                 }
             }
             binary_insert_index(main_seq, group, number_compare, group_count);
         }
-        binary_insert_index(main_seq, odd, number_compare, 0);
+        binary_insert_index(main_seq, odd, number_compare, -1);
 
         group_size /= 2;
         vector_seq = main_seq;
