@@ -197,20 +197,15 @@ void     Alg::sort_vector_seq() {
         max_power_of_2 *= 2;
     }
 
-    std::cout << "Before initial phase\n";
-    print_vector(vector_seq);
-
-
-    
     for (size_t number_of_elements = 1; number_of_elements <= max_power_of_2 / 2; number_of_elements *= 2) {
         for (size_t group = 0; group + number_of_elements * 2 - 1 < vector_size; group += number_of_elements * 2) {
             size_t last1 = group + number_of_elements - 1; // Last index of the first group
             size_t last2 = group + number_of_elements * 2 - 1; // Last index of the second group
-    
+            
             // Compare the last elements of the two groups
             number_compare++;
             if (vector_seq[last1] > vector_seq[last2]) {
-
+                
                 for (size_t i = 0; i < number_of_elements; ++i) {
                     std::swap(vector_seq[group + i], vector_seq[group + number_of_elements + i]);
                     number_swaps++;
@@ -220,47 +215,52 @@ void     Alg::sort_vector_seq() {
     }
     
     size_t group_size = max_power_of_2 / 4;
+    if (group_size == 0)
+    group_size = 1;
     std::vector<int>    main_seq;
     std::vector<int>    pend;
     std::vector<int>    odd;
-
+    
     while (group_size >= 1) {
         // std::cout << "\nGroup_size : " << group_size << std::endl;
         main_seq.clear();
         pend.clear();
         odd.clear();
-    
+        
         processGroups(vector_seq, main_seq, pend, odd, group_size);
-
+        
         // Recompute Jacobsthal sequence and reorderedPend after pend is updated.
         std::vector<int> jacobsthal = generateJacobsthalSequence(pend.size() / group_size);
         std::vector<int> reorderedPend = reorderPend(pend, jacobsthal, group_size);
         if (reorderedPend.empty())
-            reorderedPend = pend;
-
+        reorderedPend = pend;
+        
+        
         std::vector<int> group;
 
         size_t start = 0;
-        std::vector<int> original_main_seq = vector_seq;
         int group_count = 0;
         size_t index_jacob = 0;
-        while (start <= reorderedPend.size() - 1) {
-            group.clear();
-            for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
-                group.push_back(reorderedPend[start]);
-                start++;
-            }
+            if (!reorderedPend.empty()) {
+            while (start <= reorderedPend.size() - 1) {
+                group.clear();
+                for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
+                    group.push_back(reorderedPend[start]);
+                    start++;
+                }
 
-            if (!jacobsthal.empty()) {
-                if (group_count < jacobsthal.back()) {
-                    if (index_jacob < jacobsthal.size() - 1 && group_count >= jacobsthal[index_jacob]) {
-                        group_count = jacobsthal[++index_jacob];
+                if (!jacobsthal.empty()) {
+                    if (group_count < jacobsthal.back()) {
+                        if (index_jacob < jacobsthal.size() - 1 && group_count >= jacobsthal[index_jacob]) {
+                            group_count = jacobsthal[++index_jacob];
+                        }
                     }
                 }
+                binary_insert_index(main_seq, group, number_compare, group_count);
             }
-            binary_insert_index(main_seq, group, number_compare, group_count);
         }
-        binary_insert_index(main_seq, odd, number_compare, 0);
+        if (!odd.empty())
+            binary_insert_index(main_seq, odd, number_compare, 0);
 
         group_size /= 2;
         vector_seq = main_seq;
