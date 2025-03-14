@@ -63,8 +63,13 @@ std::vector<int> generateJacobsthalSequence(int size) {
     if (size <= 1) 
         return jacobsthal;
 
-    if (size == 2) {
+    // if (size == 2 || size == 3) {
+    //     jacobsthal.push_back(2);
+    //     return jacobsthal;
+    // }
+    if (size <= 4) {
         jacobsthal.push_back(2);
+        jacobsthal.push_back(4);
         return jacobsthal;
     }
 
@@ -164,10 +169,10 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
     size_t left = 0;
     size_t right = 0;
     if (group_count != -1)
-        right = pow(2, group_count + 1) - 1;
-    if (group_count == -1 || right >= main_seq.size() / group.size()) 
+        right = pow(2, group_count) - 1;
+    if (group_count == -1 || right >= main_seq.size() / group.size())
         right = main_seq.size() / group.size(); 
-
+    
     int group_last = group[group.size() - 1];
     
 
@@ -194,6 +199,11 @@ void     Alg::sort_vector_seq() {
 
     size_t vector_size = vector_seq.size();
     size_t max_power_of_2 = 1;
+
+
+    // std::cout << "Initial Vector:\n";
+    // print_vector(vector_seq);
+
 
     // Find the maximum power of 2 less than or equal to the vector size
     while (max_power_of_2 * 2 <= vector_size) {
@@ -241,16 +251,16 @@ void     Alg::sort_vector_seq() {
             
 
             // Debugging 
-        std::cout << std::endl;
+        // std::cout << std::endl;
         // std::cout << "\nGroup_size : " << group_size << std::endl;
         // std::cout << "Vector:\n";
         // print_vector(vector_seq);
-        std::cout << "Main_seq:\n";
-        print_vector(main_seq);
+        // std::cout << "Main_seq:\n";
+        // print_vector(main_seq);
         // std::cout << "Pend:\n";
         // print_vector(pend);
-        std::cout << "reorderedPend:\n";
-        print_vector(reorderedPend);
+        // std::cout << "reorderedPend:\n";
+        // print_vector(reorderedPend);
         // std::cout << "Jacob:\n";
         // print_vector(jacobsthal);
 
@@ -264,8 +274,8 @@ void     Alg::sort_vector_seq() {
         int group_number = 0;
         size_t index_jacob = 0;
 
-        if (jacobsthal.empty())
-            group_count = -2;
+        // if (jacobsthal.empty())
+        //     group_count = -2;
 
         if (!reorderedPend.empty()) {
         while (start <= reorderedPend.size() - 1) {
@@ -277,7 +287,7 @@ void     Alg::sort_vector_seq() {
 
             if (!jacobsthal.empty()) {
                 if (index_jacob < jacobsthal.size() - 1 ) {
-                    std::cout << "Group number is " << group_number << " Comparing to " << jacobsthal[index_jacob] << std::endl;
+                    // std::cout << "Group number is " << group_number << " Comparing to " << jacobsthal[index_jacob] << std::endl;
                     if (group_number >= jacobsthal[index_jacob]) {
                         group_count++;
                         index_jacob++;
@@ -285,20 +295,23 @@ void     Alg::sort_vector_seq() {
                     else 
                         group_number++;
                 }
+                else {
+                    group_count++;
+                }
             }
-            std::cout << "Group is \n";
-            print_vector(group);
-            std::cout << "Group count is " << group_count << std::endl;
+            // std::cout << "Group is \n";
+            // print_vector(group);
+            // std::cout << "Group count is " << group_count << std::endl;
 
             binary_insert_index(main_seq, group, number_compare, group_count);
-            std::cout << "Main_seq after insert:\n";
-            print_vector(main_seq);
+            // std::cout << "Main_seq after insert:\n";
+            // print_vector(main_seq);
         }
         }
 
 
-        std::cout << "Main_seq new:\n";
-        print_vector(main_seq);
+        // std::cout << "Main_seq new:\n";
+        // print_vector(main_seq);
 
         group_size /= 2;
         vector_seq = main_seq;
