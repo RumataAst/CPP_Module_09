@@ -145,7 +145,7 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
         size_t group_start = i * group_size;
         size_t group_end = group_start + group_size;
 
-        if (i % 2 == 1) {
+        if (i % 2 == 1 ) {
             for (size_t j = group_start; j < group_end; j++) {
                 main_seq.push_back(vector_seq[j]);
             }
@@ -201,8 +201,8 @@ void     Alg::sort_vector_seq() {
     size_t max_power_of_2 = 1;
 
 
-    // std::cout << "Initial Vector:\n";
-    // print_vector(vector_seq);
+    std::cout << "Initial Vector:\n";
+    print_vector(vector_seq);
 
 
     // Find the maximum power of 2 less than or equal to the vector size
@@ -225,6 +225,8 @@ void     Alg::sort_vector_seq() {
                 }
             }
         }
+        std::cout << "Vector comparison without binary insert:\n";
+        print_vector(vector_seq);
     }
     
     size_t group_size = max_power_of_2 / 4;
@@ -251,18 +253,18 @@ void     Alg::sort_vector_seq() {
             
 
             // Debugging 
-        // std::cout << std::endl;
-        // std::cout << "\nGroup_size : " << group_size << std::endl;
-        // std::cout << "Vector:\n";
-        // print_vector(vector_seq);
-        // std::cout << "Main_seq:\n";
-        // print_vector(main_seq);
-        // std::cout << "Pend:\n";
-        // print_vector(pend);
-        // std::cout << "reorderedPend:\n";
-        // print_vector(reorderedPend);
-        // std::cout << "Jacob:\n";
-        // print_vector(jacobsthal);
+        std::cout << std::endl;
+        std::cout << "\nGroup_size : " << group_size << std::endl;
+        std::cout << "Vector:\n";
+        print_vector(vector_seq);
+        std::cout << "\nMain_seq:\n";
+        print_vector(main_seq);
+        std::cout << "Pend:\n";
+        print_vector(pend);
+        std::cout << "reorderedPend:\n";
+        print_vector(reorderedPend);
+        std::cout << "Jacob:\n";
+        print_vector(jacobsthal);
 
 
 
@@ -299,25 +301,25 @@ void     Alg::sort_vector_seq() {
                     group_count++;
                 }
             }
-            // std::cout << "Group is \n";
-            // print_vector(group);
-            // std::cout << "Group count is " << group_count << std::endl;
+            std::cout << "Group is \n";
+            print_vector(group);
+            std::cout << "Group count is " << group_count << std::endl;
 
             binary_insert_index(main_seq, group, number_compare, group_count);
-            // std::cout << "Main_seq after insert:\n";
-            // print_vector(main_seq);
+            std::cout << "Main_seq after insert:\n";
+            print_vector(main_seq);
         }
         }
 
 
-        // std::cout << "Main_seq new:\n";
-        // print_vector(main_seq);
+        std::cout << "Main_seq new:\n";
+        print_vector(main_seq);
 
         group_size /= 2;
         vector_seq = main_seq;
     }
     
-    std::cout << "Main_vector\n";
+    std::cout << "Final sequence\n";
     print_vector(vector_seq);
     std::cout << "Final number of comparision " << number_compare << std::endl;
 }
