@@ -63,7 +63,7 @@ std::vector<int> generateJacobsthalSequence(int size) {
 
     if (size < 2)
         return jacob_adj;
-    else if (size == 2) {
+    else if (size >= 2 && size <= 3) {
         jacob_adj.push_back(2);
         return jacob_adj;
     }
