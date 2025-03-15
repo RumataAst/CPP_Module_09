@@ -63,6 +63,10 @@ std::vector<int> generateJacobsthalSequence(int size) {
 
     if (size < 2)
         return jacob_adj;
+    else if (size == 2) {
+        jacob_adj.push_back(2);
+        return jacob_adj;
+    }
 
     jacob_original.push_back(0);
     jacob_original.push_back(1);
@@ -70,7 +74,7 @@ std::vector<int> generateJacobsthalSequence(int size) {
     for (int i = 2; last_value < size; ++i) {
         last_value = jacob_original[i - 1] + 2 * jacob_original[i - 2];
         jacob_original.push_back(last_value);
-        if (last_value >= 3)
+        if (last_value >= 3 && last_value < size)
             jacob_adj.push_back(last_value - 1);
     }
 
@@ -160,18 +164,18 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
     size_t right = 0;
     if (group_count != -1)
         right = pow(2, group_count) - 1;
-    if (group_count == -1 || right >= main_seq.size() / group.size())
+    if (group_count == -1 || right > main_seq.size() / group.size())
         right = main_seq.size() / group.size(); 
             
+    std::cout << "main_seq / group is " << main_seq.size() / group.size() << std::endl;
         
 
     int group_last = group[group.size() - 1];
     
 
-    // Perform binary search to find the correct position based on the last element of the group
     while (left < right) {
         size_t mid = left + (right - left) / 2;
-        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];  // last element of group in main_seq
+        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];
         
         number_compare++;
         if (main_seq_last < group_last) {
@@ -181,7 +185,6 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
         }
     }
 
-    // Insert the entire group at the found position
     main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
 }
 
@@ -217,15 +220,13 @@ void     Alg::sort_vector_seq() {
                 }
             }
         }
-        std::cout << "Group with : " << number_of_elements << " elements" << std::endl;
-        print_vector(vector_seq);
+        // std::cout << "Group with : " << number_of_elements << " elements" << std::endl;
+        // print_vector(vector_seq);
     }
     
     size_t group_size = max_power_of_2 / 2;
     if (group_size == 0)
         group_size = 1;
-
-
 
     std::vector<int>    main_seq;
     std::vector<int>    pend;
@@ -267,6 +268,7 @@ void     Alg::sort_vector_seq() {
 
         std::vector<int> group;
 
+
         size_t start = 0;
         int group_count = 2;
         int group_number = 0;
@@ -284,7 +286,7 @@ void     Alg::sort_vector_seq() {
             }
 
             if (!jacobsthal.empty()) {
-                if (index_jacob <= jacobsthal.size() - 1 ) {
+                if (index_jacob <= jacobsthal.size()) {
                     if (group_number >= jacobsthal[index_jacob]) {
                         index_jacob++;
                         group_count++;
@@ -295,14 +297,18 @@ void     Alg::sort_vector_seq() {
 
             std::cout << "\nGroup to be inserted is ";
             print_vector(group);
-            std::cout << "Right index is 2 ^ " << group_count << " -1 = " << pow(2,group_count) - 1 << std::endl;
-            if (index_jacob > jacobsthal.size())
+            // std::cout << "Index jacob is " << index_jacob << " vs " << jacobsthal.size() - 1 << std::endl;
+
+            if (index_jacob > jacobsthal.size()) {
                 group_count = -1;
+            }
+
+            std::cout << "Right index is 2 ^ " << group_count << " -1 = " << pow(2,group_count) - 1 << std::endl;
             binary_insert_index(main_seq, group, number_compare, group_count);
             std::cout << "Main_seq after insert:  ";
             print_vector(main_seq);
         }
-        }
+    }
 
 
         std::cout << "Main_seq new:     ";   
