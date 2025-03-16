@@ -159,12 +159,12 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
     }
 }
 
-void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int group_count) {
+void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
     size_t left = 0;
     size_t right = 0;
-    if (group_count != -1)
-        right = pow(2, group_count) - 1;
-    if (group_count == -1 || right > main_seq.size() / group.size())
+    if (right_index != -1)
+        right = right_index;
+    if (right_index == -1 || right_index > static_cast<int>(main_seq.size() / group.size()))
         right = main_seq.size() / group.size(); 
             
     std::cout << "main_seq / group is " << main_seq.size() / group.size() << std::endl;
@@ -220,8 +220,8 @@ void     Alg::sort_vector_seq() {
                 }
             }
         }
-        // std::cout << "Group with : " << number_of_elements << " elements" << std::endl;
-        // print_vector(vector_seq);
+        std::cout << "Group with : " << number_of_elements << " elements" << std::endl;
+        print_vector(vector_seq);
     }
     
     size_t group_size = max_power_of_2 / 2;
@@ -299,12 +299,16 @@ void     Alg::sort_vector_seq() {
             print_vector(group);
             // std::cout << "Index jacob is " << index_jacob << " vs " << jacobsthal.size() - 1 << std::endl;
 
+            std::cout << "Right index is 2 ^ " << group_count << " -1 = " << pow(2,group_count) - 1 << std::endl;
+            int right_index = 0;
             if (index_jacob > jacobsthal.size()) {
-                group_count = -1;
+                right_index = get_index(vector_seq, main_seq, group, group_size);
+            }
+            else {
+                right_index = pow(2,group_count) - 1;
             }
 
-            std::cout << "Right index is 2 ^ " << group_count << " -1 = " << pow(2,group_count) - 1 << std::endl;
-            binary_insert_index(main_seq, group, number_compare, group_count);
+            binary_insert_index(main_seq, group, number_compare, right_index);
             std::cout << "Main_seq after insert:  ";
             print_vector(main_seq);
         }
