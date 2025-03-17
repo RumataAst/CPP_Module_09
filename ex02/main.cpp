@@ -25,3 +25,20 @@ int main(int argc, char *argv[]) {
         std::cout << e.what() << std::endl;
     }
 }
+
+void    Alg::print_result() const {
+    std::cout << "Before " << user_input << std::endl;
+    std::cout << "After to be done\n";
+    std::cout << "Vector : ";
+    for (std::vector<int>::const_iterator it = vector_seq.begin(); it != vector_seq.end(); ++it) {
+        std::cout << *it;
+        std::cout << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "Deque : "; 
+        for (std::deque<int>::const_iterator it = deque_seq.begin(); it != deque_seq.end(); ++it) {
+        std::cout << *it;
+        std::cout << " ";
+    }
+    std::cout << std::endl;
+}

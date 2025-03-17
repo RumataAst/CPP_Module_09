@@ -7,6 +7,8 @@
 #include <sstream>
 #include <algorithm>
 #include <cmath>
+#include <iterator>
+
 
 class Alg {
 private:
@@ -17,6 +19,8 @@ private:
     int                 deque_time;
 
     std::string         user_input;
+    std::vector<int>    jacobstahl_seq;
+
 public:
     Alg(std::string &number_seq);
     Alg(const Alg &copy);
@@ -37,6 +41,10 @@ public:
     std::cout << std::endl;
 }
 };
+
+
+int     get_index_from_main(std::vector<int> &vector_seq, std::vector<int> &main_seq, int number_to_find,size_t group_size);
+
 
 class NegativeNumber : public std::exception{
 public:
