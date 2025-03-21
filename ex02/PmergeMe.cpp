@@ -1,5 +1,5 @@
 #include "PmergeMe.hpp"
-
+#include <climits>
 // throw error if negative number is in string
 Alg::Alg(std::string &number_seq) : vector_time(0), deque_time(0), user_input(number_seq) {
         pass_to_containers(number_seq);
@@ -156,20 +156,39 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
 void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
     size_t left = 0;
     size_t right = 0;
+
     std::cout << "Right index is " << right_index << std::endl;
+
+    // Calculate right boundary of search space
     if (right_index != -1)
-        right = pow(2, right_index) - 1;
-    if (right_index == -1 || right_index > static_cast<int>(main_seq.size() / group.size()))
-        right = main_seq.size() / group.size();         
+        right = static_cast<size_t>(std::pow(2, right_index)) - 1;
+    else
+        right = main_seq.size() / group.size();
 
-    int group_last = group[group.size() - 1];
-    
+    // Clamp right to avoid going out of bounds
+    if (right > main_seq.size() / group.size()) {
+        right = main_seq.size() / group.size();
+    }
 
+    int group_last = group.back();
+    int main_seq_last = 0;
+
+    // Binary search on groups
     while (left < right) {
         size_t mid = left + (right - left) / 2;
-        int main_seq_last = main_seq[mid * group.size() + group.size() - 1];
-        
+        size_t group_start_index = mid * group.size();
+        size_t group_end_index = group_start_index + group.size() - 1;
+
+        // Ensure we don't go out of bounds
+        if (group_end_index < main_seq.size()) {
+            main_seq_last = main_seq[group_end_index];
+        } else {
+            // Out of bounds: pretend it's "infinity"
+            main_seq_last = INT_MAX;
+        }
+
         number_compare++;
+        
         if (main_seq_last < group_last) {
             left = mid + 1;
         } else {
@@ -177,8 +196,10 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
         }
     }
 
-    size_t insert_pos = std::min(left * group.size(), main_seq.size());
-    main_seq.insert(main_seq.begin() + insert_pos, group.begin(), group.end());
+    // Calculate insertion position, clamping to the end if necessary
+    // size_t insert_pos = std::min(left * group.size(), main_seq.size());
+
+    main_seq.insert(main_seq.begin() + left * group.size(), group.begin(), group.end());
 }
 
 void     Alg::sort_vector_seq() {
@@ -243,16 +264,16 @@ void     Alg::sort_vector_seq() {
             
 
             // Debugging 
-        // std::cout << std::endl;
-        // std::cout << "\n\nGroup_size : " << group_size << std::endl;
+        std::cout << std::endl;
+        std::cout << "\n\nGroup_size : " << group_size << std::endl;
 
 
 
-        // std::cout << "Pend: ";
-        // print_vector(pend);
+        std::cout << "Pend: ";
+        print_vector(pend);
 
-        // std::cout << "reorderedPend: ";
-        // print_vector(reorderedPend);
+        std::cout << "reorderedPend: ";
+        print_vector(reorderedPend);
 
 
         // std::cout << "Jacob:  ";
@@ -277,8 +298,8 @@ void     Alg::sort_vector_seq() {
                 start++;
             }
 
-            // std::cout << "\nGroup to be inserted is ";
-            // print_vector(group);
+            std::cout << "\nGroup to be inserted is ";
+            print_vector(group);
     
             if (!jacobsthal.empty()) {
                 if (static_cast<int>(group_number) >= jacobsthal[index_jacob]) {
@@ -291,22 +312,25 @@ void     Alg::sort_vector_seq() {
 
             // std::cout << "Index jacob is " << index_jacob << " vs " << jacobsthal.size() - 1 << std::endl;
 
-            
-            if (group_count < 31 && static_cast<size_t>(right_index) < main_seq.size())
+            if (group_count < 31 && 
+                (group_number != (reorderedPend.size() / group_size) && 
+                ((vector_seq.size() / group_size) % 2 == 1))) {
                 right_index = group_count;
-            else 
+            } else {
                 right_index = -1;
+            }
+            
 
             // std::cout << "Right index is " << right_index << std::endl;
             // std::cout << "Group number is " << group_number << " out of " << reorderedPend.size() / group_size << std::endl;
             // std::cout << "Index jacob is " << index_jacob << std::endl;
 
 
-            // std::cout << "Main_seq before insert:  ";
+            std::cout << "Main_seq before insert:  ";
             print_vector(main_seq);
             binary_insert_index(main_seq, group, number_compare, right_index);
-            // std::cout << "Main_seq after insert:  ";
-            // print_vector(main_seq);
+            std::cout << "Main_seq after insert:  ";
+            print_vector(main_seq);
         }
     }
 
