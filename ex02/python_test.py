@@ -2,10 +2,10 @@ import subprocess
 
 output_file = "test_python.txt"
 
-for X in range(1, 3000, 123):
+for X in range(1, 666, 1):
     print(f"Testing X = {X}")
 
-    for attempt in range(1, 11):
+    for attempt in range(1, 20):
         print(f"  Attempt {attempt}")
 
         # Generate shuffled sequence with shuf

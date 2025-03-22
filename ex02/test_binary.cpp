@@ -16,13 +16,18 @@ void    binary_insert(std::vector<int> &main_seq, std::vector<int> &to_be_insert
     else
         right_index = main_seq.size() / group_size;
 
+
+    if (right_index > main_seq.size() / group_size)
+        right_index = main_seq.size() / group_size;
+
+        
     while (left_index < right_index) {
         mid_index = left_index + (right_index - left_index) / 2;
         group_start_index = mid_index * group_size;
         group_end_index = group_start_index + group_size - 1;
+        main_seq_last = main_seq[group_end_index];
 
-
-        if (main_seq_last < group_end_index) {
+        if (main_seq_last < target) {
             left_index = mid_index + 1;
         }
         else {
@@ -30,16 +35,16 @@ void    binary_insert(std::vector<int> &main_seq, std::vector<int> &to_be_insert
         }
     }
 
-    main_seq.insert(main_seq.begin() + left_index, to_be_inserted.begin(), to_be_inserted.end());
+    main_seq.insert(main_seq.begin() + left_index * group_size, to_be_inserted.begin(), to_be_inserted.end());
 
 }
 
 
 int main(void) {
-    std::vector<int>    insert_into = {1, 2, 5 ,6};
-    std::vector<int>    to_be_insereted = {3 , 4};
+    std::vector<int>    insert_into = {1, 2, 3, 4, 9, 10, 11, 12};
+    std::vector<int>    to_be_inserted = { 5 ,6, 7, 8};
 
-    binary_insert(insert_into, to_be_insereted, 2);
+    binary_insert(insert_into, to_be_inserted, 1);
 
 
     for (std::vector<int>::iterator it = insert_into.begin(); it != insert_into.end(); ++it) {
