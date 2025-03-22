@@ -2,7 +2,7 @@ import subprocess
 
 output_file = "test_python.txt"
 
-for X in range(1, 130, 1):
+for X in range(1, 3000, 123):
     print(f"Testing X = {X}")
 
     for attempt in range(1, 11):
