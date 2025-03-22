@@ -312,14 +312,14 @@ void     Alg::sort_vector_seq() {
 
             // std::cout << "Index jacob is " << index_jacob << " vs " << jacobsthal.size() - 1 << std::endl;
 
-            if (group_count < 31 && 
-                (group_number != (reorderedPend.size() / group_size) && 
-                ((vector_seq.size() / group_size) % 2 == 1))) {
-                right_index = group_count;
-            } else {
+            right_index = group_count;
+
+            if (group_count > 31
+                || (group_number == (reorderedPend.size() / group_size) && 
+                ((vector_seq.size() / group_size) % 2 == 1)))
                 right_index = -1;
-            }
-            
+
+
 
             // std::cout << "Right index is " << right_index << std::endl;
             // std::cout << "Group number is " << group_number << " out of " << reorderedPend.size() / group_size << std::endl;
