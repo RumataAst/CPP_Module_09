@@ -212,10 +212,6 @@ void    Alg::merging(std::vector<int> &vector_seq, size_t group_size, int &numbe
     std::vector<int>    pend;
     std::vector<int>    reorderedPend;
 
-    main_seq.clear();
-    pend.clear();
-    reorderedPend.clear();
-
     //creating main_seq pend_seq
     processGroups(vector_seq, main_seq, pend, group_size);
     if (pend.empty())
@@ -244,13 +240,11 @@ void    Alg::merging(std::vector<int> &vector_seq, size_t group_size, int &numbe
             start++;
         }
 
-        if (!jacobstahl_seq.empty()) {
-            if (static_cast<int>(group_number) >= jacobstahl_seq[index_jacob]) {
+        if (static_cast<int>(group_number) >= jacobstahl_seq[index_jacob]) {
                 index_jacob++;
                 group_count++;
             }
-            group_number++;
-        }
+        group_number++;
 
         right_index = group_count;
         if (group_count > 31)
