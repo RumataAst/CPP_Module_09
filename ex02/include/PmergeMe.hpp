@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iterator>
-
+#include <limits.h>
 
 class Alg {
 private:
@@ -27,12 +27,26 @@ public:
     Alg &operator=(const Alg &source);
     ~Alg();
 
+
+    void    sorting(std::vector<int> &vector_seq, size_t max_power_of_2, int &number_compare);
+    void    merging(std::vector<int> &vector_seq, size_t group_size, int &number_compare);
+
+
+    void    generate_jacobstahl();
+    void    binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index);
+    void    processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_seq, std::vector<int>& pend, size_t group_size);
+    std::vector<int> reorderPend(const std::vector<int>& pend, size_t group_size);
+
+
     void    pass_to_containers(std::string &number_seq);
     void    print_result() const;
 
     void    sort_vector_seq();
     void    sort_deque_time();
 
+
+
+    
 //debugging
     void    print_vector(std::vector<int> vector) {
     for (std::vector<int>::iterator it = vector.begin(); it != vector.end(); it++) {

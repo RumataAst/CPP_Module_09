@@ -1,10 +1,9 @@
 #include "PmergeMe.hpp"
 
-Alg::Alg(std::string &number_seq) : vector_time(0), deque_time(0), user_input(number_seq) {
-    static const int arr[] = { 2, 4, 10, 20, 42, 84, 170, 340, 682, 1364, 2730, 5460, 10922, 21845};
+Alg::Alg(std::string &number_seq) : vector_time(0), deque_time(0), user_input(number_seq), jacobstahl_seq(0) {
    
     pass_to_containers(number_seq);
-    jacobstahl_seq(arr< arr + sizeof(arr) / sizeof(arr[0]));
+    generate_jacobstahl();
 }
 
 Alg::~Alg() {}
@@ -24,6 +23,7 @@ Alg &Alg::operator=(const Alg &source) {
     this->user_input = source.user_input;
     this->deque_seq = source.deque_seq;
     this->vector_seq = source.vector_seq;
+    this->jacobstahl_seq = source.jacobstahl_seq;
     return *this;
 }
 
@@ -39,6 +39,25 @@ void    Alg::pass_to_containers(std::string &number_seq) {
         vector_seq.push_back(number); 
         deque_seq.push_back(number);
     }
+}
+
+
+void    Alg::generate_jacobstahl() {
+
+    jacobstahl_seq.push_back(2);
+    jacobstahl_seq.push_back(4);
+    jacobstahl_seq.push_back(10);
+    jacobstahl_seq.push_back(20);
+    jacobstahl_seq.push_back(42);
+    jacobstahl_seq.push_back(84);
+    jacobstahl_seq.push_back(170);
+    jacobstahl_seq.push_back(340);
+    jacobstahl_seq.push_back(682);
+    jacobstahl_seq.push_back(1364);
+    jacobstahl_seq.push_back(2730);
+    jacobstahl_seq.push_back(5460);
+    jacobstahl_seq.push_back(10922);
+    jacobstahl_seq.push_back(21845);
 }
 
 void    Alg::print_result() const {
@@ -58,7 +77,7 @@ void    Alg::print_result() const {
     std::cout << std::endl;
 }
 
-std::vector<int> reorderPend(const std::vector<int>& pend, size_t group_size) {
+std::vector<int> Alg::reorderPend(const std::vector<int>& pend, size_t group_size) {
     std::vector<int> new_vector;
 
     int     original_index = 0;
@@ -96,7 +115,7 @@ std::vector<int> reorderPend(const std::vector<int>& pend, size_t group_size) {
 
 
 
-void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
+void Alg::binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
     size_t left = 0;
     size_t right = 0;
 
@@ -121,8 +140,6 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
 
         if (group_end_index < main_seq.size()) {
             main_seq_last = main_seq[group_end_index];
-        } else {
-            main_seq_last = INT_MAX;
         }
 
         number_compare++;
@@ -138,7 +155,7 @@ void binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& gro
 
 
 // creating from vector_seq b1a1b2a2....bnan     2 new vectors main_seq b1a1a2..an (rest) + pend b2b3...bn
-void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_seq, std::vector<int>& pend, size_t group_size) {
+void Alg::processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_seq, std::vector<int>& pend, size_t group_size) {
     size_t vector_size = vector_seq.size();
     size_t num_groups = vector_size / group_size;
 
@@ -172,17 +189,8 @@ void processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_se
     }
 }
 
-void     Alg::sort_vector_seq() {
-    int number_swaps = 0;
+void    Alg::sorting(std::vector<int> &vector_seq, size_t max_power_of_2, int &number_compare) {
     size_t vector_size = vector_seq.size();
-    size_t max_power_of_2 = 1;
-
-
-    while (max_power_of_2 * 2 <= vector_size) {
-        max_power_of_2 *= 2;
-    }
-
-    // First step
     for (size_t number_of_elements = 1; number_of_elements <= max_power_of_2 / 2; number_of_elements *= 2) {
         for (size_t group = 0; group + number_of_elements * 2 - 1 < vector_size; group += number_of_elements * 2) {
             size_t last1 = group + number_of_elements - 1;
@@ -193,72 +201,91 @@ void     Alg::sort_vector_seq() {
                 
                 for (size_t i = 0; i < number_of_elements; ++i) {
                     std::swap(vector_seq[group + i], vector_seq[group + number_of_elements + i]);
-                    number_swaps++;
                 }
             }
         }
     }
+}
+
+void    Alg::merging(std::vector<int> &vector_seq, size_t group_size, int &number_compare) {
+    std::vector<int>    main_seq;
+    std::vector<int>    pend;
+    std::vector<int>    reorderedPend;
+
+    main_seq.clear();
+    pend.clear();
+    reorderedPend.clear();
+
+    //creating main_seq pend_seq
+    processGroups(vector_seq, main_seq, pend, group_size);
+    if (pend.empty())
+        return ;
+    
+    //creating new order vector to pend based on the jacobstahl_seqSeq
+    reorderedPend = reorderPend(pend, group_size);
+    if (reorderedPend.empty())
+        reorderedPend = pend;
+
+    // group that will be passed from reorderedPend to main_seq
+    std::vector<int> group;
+
+    // starting with binary insertion
+    size_t start = 0;
+    size_t group_count = 2;
+    size_t group_number = 0;
+    size_t index_jacob = 0;
+
+    int right_index = 0;
+
+    while (start <= reorderedPend.size() - 1) {
+        group.clear();
+        for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
+            group.push_back(reorderedPend[start]);
+            start++;
+        }
+
+        if (!jacobstahl_seq.empty()) {
+            if (static_cast<int>(group_number) >= jacobstahl_seq[index_jacob]) {
+                index_jacob++;
+                group_count++;
+            }
+            group_number++;
+        }
+
+        right_index = group_count;
+        if (group_count > 31)
+            right_index = -1;
+
+        binary_insert_index(main_seq, group, number_compare, right_index);
+    }
+    vector_seq = main_seq;
+}
+
+void     Alg::sort_vector_seq() {
+    int number_compare = 0;
+    size_t vector_size = vector_seq.size();
+    size_t max_power_of_2 = 1;
+
+
+    while (max_power_of_2 * 2 <= vector_size) {
+        max_power_of_2 *= 2;
+    }
+
+    // First step sorting inside the vector
+    sorting(vector_seq, max_power_of_2,number_compare);
 
     size_t group_size = max_power_of_2 / 2;
     if (group_size == 0)
         group_size = 1;
 
-    std::vector<int>    main_seq;
-    std::vector<int>    pend;
-    std::vector<int>    reorderedPend;
 
     while (group_size >= 1) {
-        main_seq.clear();
-        pend.clear();
-        reorderedPend.clear();
-
-        //creating main_seq pend_seq
-        processGroups(vector_seq, main_seq, pend, group_size);
-
-        //creating new order vector to pend based on the JacobsthalSeq
-        reorderedPend = reorderPend(pend, group_size);
-        if (reorderedPend.empty())
-            reorderedPend = pend;
-
-
-            std::vector<int> group;
-
-        // starting with binary insertion
-        size_t start = 0;
-        size_t group_count = 2;
-        size_t group_number = 0;
-        size_t index_jacob = 0;
-    
-        if (!reorderedPend.empty()) {
-            int right_index = 0;
-
-            while (start <= reorderedPend.size() - 1) {
-                group.clear();
-                for (size_t i = 0; i < group_size && start < reorderedPend.size(); ++i) {
-                    group.push_back(reorderedPend[start]);
-                    start++;
-                }
-        
-                if (!jacobsthal.empty()) {
-                    if (static_cast<int>(group_number) >= jacobsthal[index_jacob]) {
-                        index_jacob++;
-                        group_count++;
-                    }
-                    group_number++;
-                }
-
-                right_index = group_count;
-                if (group_count > 31)
-                    right_index = -1;
-
-                binary_insert_index(main_seq, group, number_compare, right_index);
-            }
-    }
-
+       
+        merging(vector_seq, group_size, number_compare);
         group_size /= 2;
-        vector_seq = main_seq;
     }
 
+    
     std::cout << "Final sequence\n";
     print_vector(vector_seq);
     std::cout << "Final number of comparision " << number_compare << std::endl;
