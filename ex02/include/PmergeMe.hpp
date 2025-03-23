@@ -9,14 +9,16 @@
 #include <cmath>
 #include <iterator>
 #include <limits.h>
+#include <ctime>
+
+# define JACOBSTAHL_SIZE 10
 
 class Alg {
 private:
     std::vector<int>    vector_seq;
     std::deque<int>     deque_seq;
 
-    int                 vector_time;
-    int                 deque_time;
+    std::clock_t        vector_time, deque_time;
 
     std::string         user_input;
     std::vector<int>    jacobstahl_seq;
@@ -27,7 +29,7 @@ public:
     Alg &operator=(const Alg &source);
     ~Alg();
 
-
+    
     void    sorting(std::vector<int> &vector_seq, size_t max_power_of_2, int &number_compare);
     void    merging(std::vector<int> &vector_seq, size_t group_size, int &number_compare);
 
@@ -49,16 +51,12 @@ public:
     
 //debugging
     void    print_vector(std::vector<int> vector) {
-    for (std::vector<int>::iterator it = vector.begin(); it != vector.end(); it++) {
-        std::cout << *it << " ";
+        for (std::vector<int>::iterator it = vector.begin(); it != vector.end(); it++) {
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
-}
 };
-
-
-int     get_index_from_main(std::vector<int> &vector_seq, std::vector<int> &main_seq, int number_to_find,size_t group_size);
-
 
 class NegativeNumber : public std::exception{
 public:

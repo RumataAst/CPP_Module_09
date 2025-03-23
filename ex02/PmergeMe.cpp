@@ -41,26 +41,26 @@ void    Alg::pass_to_containers(std::string &number_seq) {
 
 
 std::vector<int> generateJacobsthalSequence(int size) {
-    // std::vector<int>    jacob_original;
+    std::vector<int>    jacob_original;
     std::vector<int>    jacob_adj;
-    // int                 last_value = 0;
+    int                 last_value = 0;
 
-    // if (size < 2)
-    //     return jacob_adj;
-    // else if (size >= 2 && size <= 3) {
-    //     jacob_adj.push_back(2);
-    //     return jacob_adj;
-    // }
+    if (size < 2)
+        return jacob_adj;
+    else if (size >= 2 && size <= 3) {
+        jacob_adj.push_back(2);
+        return jacob_adj;
+    }
 
-    // jacob_original.push_back(0);
-    // jacob_original.push_back(1);
+    jacob_original.push_back(0);
+    jacob_original.push_back(1);
 
-    // for (int i = 2; last_value < size; ++i) {
-    //     last_value = jacob_original[i - 1] + 2 * jacob_original[i - 2];
-    //     jacob_original.push_back(last_value);
-    //     if (last_value >= 3 && last_value < size)
-    //         jacob_adj.push_back(last_value - 1);
-    // }
+    for (int i = 2; last_value < size; ++i) {
+        last_value = jacob_original[i - 1] + 2 * jacob_original[i - 2];
+        jacob_original.push_back(last_value);
+        if (last_value >= 3 && last_value < size)
+            jacob_adj.push_back(last_value - 1);
+    }
     (void)size;
 
     jacob_adj.push_back(2);

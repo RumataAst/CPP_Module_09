@@ -31,6 +31,8 @@ void    Alg::pass_to_containers(std::string &number_seq) {
     std::stringstream   iss(number_seq);
     int                 number;
 
+    //Additional check for numbers needed;
+
     while (iss >> number) {
         if (number < 0)
             throw NegativeNumber();
@@ -43,7 +45,6 @@ void    Alg::pass_to_containers(std::string &number_seq) {
 
 
 void    Alg::generate_jacobstahl() {
-
     jacobstahl_seq.push_back(2);
     jacobstahl_seq.push_back(4);
     jacobstahl_seq.push_back(10);
@@ -215,7 +216,7 @@ void    Alg::merging(std::vector<int> &vector_seq, size_t group_size, int &numbe
     if (pend.empty())
         return ;
     
-    //creating new order vector to pend based on the jacobstahl_seqSeq
+    //creating new reorderedPend vector based on the pend and jacobstahl_seqSeq
     reorderedPend = reorderPend(pend, group_size);
     if (reorderedPend.empty())
         reorderedPend = pend;
@@ -255,6 +256,7 @@ void    Alg::merging(std::vector<int> &vector_seq, size_t group_size, int &numbe
 
 void     Alg::sort_vector_seq() {
     int number_compare = 0;
+    vector_time = std::clock();
     size_t vector_size = vector_seq.size();
     size_t max_power_of_2 = 1;
 
@@ -287,4 +289,5 @@ void     Alg::sort_vector_seq() {
             std::cout << "\nNot really sorted " << vector_seq[i - 1] << " and " << vector_seq[i] << std::endl;    
         }
     }
+    std::cout << "Time needed is " << (double)(std::clock() - vector_time) / CLOCKS_PER_SEC * 1000000 << " us(micro seconds)"<< std::endl;
 }
