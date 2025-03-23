@@ -113,8 +113,6 @@ std::vector<int> Alg::reorderPend(const std::vector<int>& pend, size_t group_siz
     return new_vector;
 }
 
-
-
 void Alg::binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index) {
     size_t left = 0;
     size_t right = 0;
@@ -272,9 +270,8 @@ void     Alg::sort_vector_seq() {
     if (group_size == 0)
         group_size = 1;
 
-
+    // Second step, creating vectors main and pend and then insering groups from pend in the jacobsthal_seq to main
     while (group_size >= 1) {
-       
         merging(vector_seq, group_size, number_compare);
         group_size /= 2;
     }
