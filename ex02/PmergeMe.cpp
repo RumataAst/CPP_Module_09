@@ -33,8 +33,10 @@ void    MergeSorter::pass_to_containers(std::string &number_seq) {
 
     //Additional check for numbers needed;
 
+    if (number_seq.find_first_not_of(' ') == std::string::npos)
+        throw NotANumber();
     for (size_t i = 0; i < number_seq.size(); i++) {
-        if (number_seq[i] < 48 || number_seq[i] > 57)
+        if ((number_seq[i] < 48 || number_seq[i] > 57) && number_seq[i] != 32)
             throw NotANumber();
     }
 
