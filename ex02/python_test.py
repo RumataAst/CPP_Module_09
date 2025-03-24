@@ -29,7 +29,7 @@ for X in range(1, 666, 1):
             print(f"Pmerge exited with error code {e.returncode}")
 
         # Check for error condition in output
-        if "Not really sorted" in pmerge_result:
+        if "is not sorted" in pmerge_result:
             print("  Found error! Writing to file and stopping.")
             with open(output_file, "w") as f:
                 f.write(f"Failed on X = {X}, Attempt = {attempt}\n")

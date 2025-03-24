@@ -13,7 +13,7 @@
 
 # define JACOBSTAHL_SIZE 10
 
-class Alg {
+class MergeSorter  {
 private:
     std::vector<int>    vector_seq;
     std::deque<int>     deque_seq;
@@ -24,27 +24,30 @@ private:
     std::vector<int>    jacobstahl_seq;
 
 public:
-    Alg(std::string &number_seq);
-    Alg(const Alg &copy);
-    Alg &operator=(const Alg &source);
-    ~Alg();
+    MergeSorter(std::string &number_seq);
+    MergeSorter(const MergeSorter &copy);
+    MergeSorter &operator=(const MergeSorter &source);
+    ~MergeSorter();
 
+    template <typename Container>
+    void    sorting(Container &Container_seq, size_t max_power_of_2, int &number_compare);
+    template <typename Container>
+    void    merging(Container &Container_seq, size_t group_size, int &number_compare);
+
+
+    template <typename Container>
+    void    binary_insert_index(Container& main_seq, const Container& group, int &number_compare, int right_index);
+    template <typename Container>
+    void    processGroups(const Container& Container_seq, Container& main_seq, Container& pend, size_t group_size);
+    template <typename Container>
+    Container reorderPend(const Container& pend, size_t group_size);
     
-    void    sorting(std::vector<int> &vector_seq, size_t max_power_of_2, int &number_compare);
-    void    merging(std::vector<int> &vector_seq, size_t group_size, int &number_compare);
-
-
-    void    generate_jacobstahl();
-    void    binary_insert_index(std::vector<int>& main_seq, const std::vector<int>& group, int &number_compare, int right_index);
-    void    processGroups(const std::vector<int>& vector_seq, std::vector<int>& main_seq, std::vector<int>& pend, size_t group_size);
-    std::vector<int> reorderPend(const std::vector<int>& pend, size_t group_size);
-
-
+    
     void    pass_to_containers(std::string &number_seq);
+    void    generate_jacobstahl();
     void    print_result() const;
 
-    void    sort_vector_seq();
-    void    sort_deque_time();
+    void    sort_container_seq(std::string type_container);
 
 
 
@@ -73,6 +76,7 @@ class DuplicateNumber : public std::exception{
     };
     
 
+    #include "PmergeMe.tpp"
 
 
 #endif

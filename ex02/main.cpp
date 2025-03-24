@@ -1,8 +1,8 @@
 #include "PmergeMe.hpp"
 
-
 int main(int argc, char *argv[]) {
     std::string user_input;
+
     if (argc < 2) {
         std::cerr << "Error: add numbers\n";
         return 1;
@@ -16,10 +16,11 @@ int main(int argc, char *argv[]) {
         }
     }
     try {
-        Alg alg_instance(user_input);
-        alg_instance.sort_vector_seq();
+        MergeSorter alg_instance(user_input);
+        alg_instance.sort_container_seq("vector");
+        alg_instance.sort_container_seq("deque");
 
-        // alg_instance.print_result();
+        alg_instance.print_result();
     }
     catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
