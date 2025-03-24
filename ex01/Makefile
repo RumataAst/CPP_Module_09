@@ -18,10 +18,10 @@ $(BIN)/%.o: %.cpp | $(BIN)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(BIN):
-	+mkdir $(BIN)
+	@+mkdir $(BIN)
 
 clean:
-	rm -rf $(BIN)
+	@rm -rf $(BIN)
 
 fclean: clean
 	@rm -f $(NAME)

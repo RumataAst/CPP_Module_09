@@ -36,7 +36,7 @@ int RPN::perform_operation(char c, int value_1, int value_2) {
 void RPN::calculate_RPN(std::string &data) {
     std::string::iterator   it;
     int                     value_1, value_2, result;
-    std::string             operator = "+-*/";
+    std::string             operator_sign = "+-*/";
 
     // Remove whitespace characters
     it = std::remove_if(data.begin(), data.end(), std::ptr_fun<int, int>(std::isspace));
@@ -48,9 +48,9 @@ void RPN::calculate_RPN(std::string &data) {
         if (std::isdigit(c)) {
             _dataRPN.push(c - '0');
         } 
-        else if (operator.find(c) != std::string::npos) {
+        else if (operator_sign.find(c) != std::string::npos) {
             if (_dataRPN.size() < 2) {
-                std::cerr << "Error: Not enough operator for operator: " << c << "'\n";
+                std::cerr << "Not enough operands for operator: " << c << "'\n";
                 return;
             }
             value_2 = _dataRPN.top();
