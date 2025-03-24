@@ -75,8 +75,14 @@ class DuplicateNumber : public std::exception{
         }   
     };
     
+class NotANumber : public std::exception{
+    public:
+        virtual const char *what() const throw() {
+            return "Please use only unique positive numbers";
+        }   
+    };
 
-    #include "PmergeMe.tpp"
+#include "PmergeMe.tpp"
 
 
 #endif
