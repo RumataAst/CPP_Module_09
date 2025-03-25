@@ -32,6 +32,7 @@ struct time_struct {
     bool isLeapYear() const;
     bool isValid() const;
     bool operator<(const time_struct& ts) const;
+    bool operator>(const time_struct& ts) const;
 };
 
 #define data_csv std::map<time_struct, finance_struct>

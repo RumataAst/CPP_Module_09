@@ -8,14 +8,11 @@ bool    time_struct::operator<(const time_struct& ts) const {
         return time_to_days < ts.time_to_days;
 }
 
-bool    time_struct::isValid() const {
-    if (!isdigit(dateStr[0]) || !isdigit(dateStr[1]) || !isdigit(dateStr[2]) || !isdigit(dateStr[3]) ||
-        dateStr[4] != '-' || !isdigit(dateStr[5]) || !isdigit(dateStr[6]) ||
-        dateStr[7] != '-' || !isdigit(dateStr[8]) || !isdigit(dateStr[9])) {
-        std::cerr << "Error: Invalid date format for date: " << dateStr << std::endl;
-        return false;
-    }
+bool time_struct::operator>(const time_struct& ts) const {
+    return time_to_days > ts.time_to_days;
+}
 
+bool    time_struct::isValid() const {
     if (month < 1 || month > 12) 
         return false;
 

@@ -95,12 +95,20 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
 
     std::string line, dateStr, valueStr;
     std::string::iterator it;
+    
     while (getline(iFile, line)) {
         if (line.empty()) {
             continue;
         }
 
         std::stringstream ss(line);
+
+        size_t delimiterPos = line.find('|');
+        if (delimiterPos == std::string::npos) {
+            std::cerr << "Error: Missing '|' delimiter in input: " << line << std::endl;
+            continue;
+        }
+    
         if (line == "date | value")
             continue;
         if (std::getline(ss, dateStr, '|') && std::getline(ss, valueStr)) {
@@ -108,22 +116,26 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
             dateStr.erase (it, dateStr.end());
             it = std::remove_if(valueStr.begin(), valueStr.end(), std::ptr_fun<int, int>(std::isspace));
             valueStr.erase (it, valueStr.end());
-
+            
             time_struct ts = parseDate(dateStr);
             finance_struct fs = parseNumber(valueStr);
-            if (!ts.isValid() ||!fs.isNumberValid()) {
+            if (!ts.isValid() || dateStr.empty()) {
+                std::cerr << "Error: Incorrect date format. " << dateStr << std::endl;
+                continue;
+            }
+            if (!fs.isNumberValid() || valueStr.empty()) {
+                std::cerr << "Error: Incorrect number format. " << valueStr << std::endl;
                 continue;
             }
         
             data_csv::iterator it = _dataExch.lower_bound(ts);
 
-            if (it == _dataExch.end()) {
-                if (_dataExch.empty()) {
-                    std::cerr << "Error: No exchange rate data available.\n";
+            if (it == _dataExch.end() || it->first > static_cast<const time_struct&>(ts)) {
+                if (it == _dataExch.begin()) {
+                    std::cerr << "Error: No valid exchange rate found before the given time.\n";
                     continue;
                 }
-                it = _dataExch.end();
-                --it; 
+                --it;
             }
 
             double result = fs.number * it->second.number;
@@ -134,6 +146,12 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
                 continue;
             }
             std::cout << ts << " => " << fs.number << " * " << it->second.number << " = " << result << std::endl;
+        }
+        else {
+            if (dateStr.empty() || !parseDate(dateStr).isValid()) {
+                std::cerr << "Error: Incorrect date format or empty date: " << dateStr << std::endl;
+                continue;
+            }
         }
     }
 }
