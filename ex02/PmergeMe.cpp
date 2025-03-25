@@ -52,7 +52,7 @@ void    MergeSorter::pass_to_containers(std::string &number_seq) {
 
 
 void    MergeSorter::generate_jacobstahl() {
-    static const int arr[] = {2, 4, 10, 20, 42, 84, 170, 340, 682, 1364, 2730, 5460, 10922, 21845};
+    static const int arr[] = {2, 4, 10, 20, 42, 84, 170, 340, 682, 1364, 2730, 5460, 10922, 21844};
     jacobstahl_seq.assign(arr, arr + 14);
 }
 

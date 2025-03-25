@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
         alg_instance.print_result();
     }
     catch (const std::exception &e) {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
     }
 }
 
