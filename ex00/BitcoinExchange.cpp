@@ -109,14 +109,26 @@ void BitcoinExchange::showMerge(std::ifstream &iFile) {
             continue;
         }
     
-        if (line == "date | value")
-            continue;
+
         if (std::getline(ss, dateStr, '|') && std::getline(ss, valueStr)) {
             it = std::remove_if(dateStr.begin(), dateStr.end(), std::ptr_fun<int, int>(std::isspace));
             dateStr.erase (it, dateStr.end());
             it = std::remove_if(valueStr.begin(), valueStr.end(), std::ptr_fun<int, int>(std::isspace));
             valueStr.erase (it, valueStr.end());
             
+            if (dateStr == "date" &&  valueStr == "value")
+                continue;
+
+            if (!(dateStr.length() == 10 &&
+                std::isdigit(dateStr[0]) && std::isdigit(dateStr[1]) &&
+                std::isdigit(dateStr[2]) && std::isdigit(dateStr[3]) &&
+                dateStr[4] == '-' &&
+                std::isdigit(dateStr[5]) && std::isdigit(dateStr[6]) &&
+                dateStr[7] == '-' &&
+                std::isdigit(dateStr[8]) &&
+                (std::isdigit(dateStr[9]) || dateStr[9] == '\0'))) 
+                continue;
+
             time_struct ts = parseDate(dateStr);
             finance_struct fs = parseNumber(valueStr);
             if (!ts.isValid() || dateStr.empty()) {
